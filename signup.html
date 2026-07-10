@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up · 10X CRM</title>
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body class="theme-light">
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <div class="auth-brand">
+        <span class="brand-mark">10X</span>
+        <span class="brand-name">10X CRM</span>
+      </div>
+      <h1 class="auth-title">Create your account</h1>
+      <p class="auth-sub">Start managing your sales pipeline</p>
+
+      <form id="signupForm" novalidate>
+        <div class="field">
+          <label for="fullName">Full Name</label>
+          <input class="input" type="text" id="fullName" placeholder="Nino Beridze">
+          <small class="error-text" id="fullNameErr"></small>
+        </div>
+        <div class="field">
+          <label for="email">Email</label>
+          <input class="input" type="text" id="email" placeholder="you@example.com">
+          <small class="error-text" id="emailErr"></small>
+        </div>
+        <div class="field">
+          <label for="company">Company</label>
+          <input class="input" type="text" id="company" placeholder="Company (optional)">
+          <small class="error-text" id="companyErr"></small>
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input class="input" type="password" id="password" placeholder="••••••••">
+          <small class="error-text" id="passwordErr"></small>
+        </div>
+        <div class="field">
+          <label for="confirm">Confirm Password</label>
+          <input class="input" type="password" id="confirm" placeholder="••••••••">
+          <small class="error-text" id="confirmErr"></small>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block btn-lg mt-1">Create Account</button>
+      </form>
+
+      <p class="auth-foot">Already have an account? <a href="index.html">Log in</a></p>
+    </div>
+  </div>
+
+  <script src="js/storage.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/guard.js"></script>
+  <script src="js/signup.js"></script>
+</body>
+</html>
