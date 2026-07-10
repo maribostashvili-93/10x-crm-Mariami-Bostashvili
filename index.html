@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Log in to 10X CRM - Manage your clients and deals efficiently">
+    <title>Log In · 10X CRM</title>
+    <link rel="stylesheet" href="css/app.css">
+</head>
+<body class="theme-light">
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <div class="auth-brand">
+        <span class="brand-mark">10X</span>
+        <span class="brand-name">10X CRM</span>
+      </div>
+      <h1 class="auth-title">Welcome back</h1>
+      <p class="auth-sub">Log in to your account</p>
+
+      <form id="loginForm" novalidate>
+        <div class="field">
+          <label for="email">Email</label>
+          <input class="input" type="text" id="email" placeholder="you@example.com">
+          <small class="error-text" id="emailErr"></small>
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input class="input" type="password" id="password" placeholder="••••••••">
+          <small class="error-text" id="passwordErr"></small>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block btn-lg mt-1">Log In</button>
+      </form>
+
+      <p class="auth-foot">Don't have an account? <a href="signup.html">Sign up</a></p>
+    </div>
+  </div>
+
+   <script src="js/storage.js"></script>
+   <script src="js/ui.js"></script>
+   <script src="js/guard.js"></script>
+   <script src="js/login.js"></script>
+
+</body>
+    
+</body>
+</html>
