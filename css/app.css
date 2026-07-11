@@ -632,3 +632,23 @@ p {
 .hidden {
   display: none !important;
 }
+
+/*profile other css*/
+.btn-danger {
+  background: var(--danger);
+  color: #fff;
+}
+.btn-danger:hover {
+  filter: brightness(1.07);
+}
+
+.text-dim {
+  color: var(--text-muted);
+  opacity: 0.8;
+}
+.mb-0 {
+  margin-bottom: 0;
+}
+.mt-3 {
+  margin-top: 2.4rem;
+}
