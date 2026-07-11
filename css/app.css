@@ -265,10 +265,11 @@ p {
   height: 100vh;
 }
 .sidebar-brand {
+  height: 6.4rem; /* same height as the topbar */
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 2rem 2.2rem;
+  padding: 0 2.2rem; /* only left/right padding now */
   border-bottom: 1px solid var(--border);
 }
 .sidebar-brand .brand-mark {
