@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard · 10X CRM</title>
+    <link rel="stylesheet" href="css/app.css" />
+  </head>
+  <body class="theme-light">
+    <!-- app = whole screen: sidebar on the left, main area on the right -->
+    <div class="app">
+      <!--SIDEBAR (left navigation)-->
+      <aside class="sidebar">
+        <div class="sidebar-brand">
+          <span class="brand-mark">10X</span>
+          <span class="brand-name">10X CRM</span>
+        </div>
+
+        <nav class="nav-menu">
+          <a href="dashboard.html" class="nav-link active">
+            <svg
+              class="nav-ico"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect width="7" height="9" x="3" y="3" rx="1" />
+              <rect width="7" height="5" x="14" y="3" rx="1" />
+              <rect width="7" height="9" x="14" y="12" rx="1" />
+              <rect width="7" height="5" x="3" y="16" rx="1" />
+            </svg>
+            Dashboard
+          </a>
+
+          <a href="clients.html" class="nav-link">
+            <svg
+              class="nav-ico"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+            Clients
+          </a>
+
+          <a href="profile.html" class="nav-link">
+            <svg
+              class="nav-ico"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+            Profile
+          </a>
+        </nav>
+
+        <div class="sidebar-foot">
+          <a href="index.html" class="nav-link">Log out</a>
+        </div>
+      </aside>
+
+      <!-- MAIN (topbar + page content)-->
+      <div class="main">
+        <!-- top bar -->
+        <header class="topbar">
+          <div class="topbar-left">
+            <h2 class="topbar-title">Dashboard</h2>
+          </div>
+          <div class="topbar-right">
+            <button class="icon-btn" id="themeToggle" aria-label="Toggle theme">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"
+                />
+              </svg>
+            </button>
+            <div class="user-chip">
+              <span class="avatar avatar-initials">MT</span>
+              <span class="u-name">Mariam Testidze</span>
+            </div>
+          </div>
+        </header>
+
+        <!-- page content -->
+        <div class="content">
+          <!-- greeting -->
+          <div class="page-head">
+            <div>
+              <h1 id="greeting">Welcome back!</h1>
+              <p class="sub" id="clock">—</p>
+            </div>
+          </div>
+
+          <!-- stat cards (JS will fill this later) -->
+          <div class="grid grid-4 mb-3" id="statCards"></div>
+
+          <!-- pipeline + recent clients -->
+          <div class="grid grid-2">
+            <div class="card">
+              <div class="card-body">
+                <h3 class="card-title mb-2">Pipeline Overview</h3>
+                <div id="pipeline"></div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-body">
+                <h3 class="card-title mb-2">Recent Clients</h3>
+                <div id="recent"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
