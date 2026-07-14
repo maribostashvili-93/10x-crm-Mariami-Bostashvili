@@ -129,6 +129,12 @@ p {
   font-weight: 800;
   letter-spacing: -0.3px;
 }
+/* SVG wordmark logo on the auth pages (adapts to theme via currentColor) */
+.auth-logo {
+  width: 150px;
+  height: auto;
+  color: var(--text);   /* currentColor in the SVG becomes the theme text color */
+}
 
 /* headings under the logo */
 .auth-title {
@@ -366,7 +372,12 @@ p {
   padding: 0.5rem 0.6rem 0.5rem 1.2rem;
   border-radius: 999px;
   border: 1px solid var(--border);
+  text-decoration: none;             /* no underline (it's a link now) */
+  color: var(--text);                /* normal text color, not link-blue */
+  cursor: pointer;
+  transition: border-color 0.15s ease;
 }
+.user-chip:hover { border-color: var(--primary); }   /* subtle highlight on hover */
 .user-chip .u-name {
   font-size: 1.4rem;
   font-weight: 600;
