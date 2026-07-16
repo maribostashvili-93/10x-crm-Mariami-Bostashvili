@@ -79,5 +79,23 @@ signupForm.addEventListener('submit', function (event) {
     isValid = false;
   }
 
-  if (!isValid) return; // stop if any field failed
+  if (!isValid) return;
+
+  const newUser = {
+    id: Date.now(),
+    fullName,
+    email: emailLower,
+    password,
+    company,
+    createdAt: new Date().toISOString(),
+  };
+
+  const users = getUsers();
+  users.push(newUser);
+  saveUsers(users);
+
+  showToast('Account created successfully! Please log in.', 'success');
+  setTimeout(() => {
+    window.location.href = 'index.html';
+  }, 1500);
 });

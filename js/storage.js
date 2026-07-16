@@ -32,3 +32,47 @@ function getFromStorage(key, fallbackValue = null) {
 function removeFromStorage(key) {
   localStorage.removeItem(key);
 }
+
+//  Users
+function getUsers() {
+  return getFromStorage(STORAGE_KEYS.users, []);
+}
+
+function saveUsers(users) {
+  saveToStorage(STORAGE_KEYS.users, users);
+}
+
+//  Session
+function getSession() {
+  return getFromStorage(STORAGE_KEYS.session, null);
+}
+
+function saveSession(session) {
+  saveToStorage(STORAGE_KEYS.session, session);
+}
+
+function clearSession() {
+  removeFromStorage(STORAGE_KEYS.session);
+}
+
+//  Clients
+function getClients() {
+  return getFromStorage(STORAGE_KEYS.clients, []);
+}
+
+function saveClients(clients) {
+  saveToStorage(STORAGE_KEYS.clients, clients);
+}
+
+function clearClients() {
+  removeFromStorage(STORAGE_KEYS.clients);
+}
+
+//  Theme
+function getTheme() {
+  return getFromStorage(STORAGE_KEYS.theme, 'light');
+}
+
+function saveTheme(theme) {
+  saveToStorage(STORAGE_KEYS.theme, theme);
+}
