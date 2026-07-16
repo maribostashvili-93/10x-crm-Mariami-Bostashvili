@@ -4,11 +4,23 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sign Up · 10X CRM</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" />
   <link rel="stylesheet" href="css/app.css">
+  <link rel="stylesheet" href="css/glass.css?v=11" />
 </head>
 <body class="theme-light">
   <div class="auth-wrap">
-    <div class="auth-card">
+    <div class="auth-shell">
+      <section class="auth-visual" aria-hidden="true">
+        <div id="liquid"></div>
+        <div class="auth-visual__label">Get started</div>
+        <h2 class="auth-visual__title">Your clients.<br>Your pipeline.<br>One workspace.</h2>
+        <p class="auth-visual__text">Create your account and bring every deal, contact and conversation together.</p>
+      </section>
+
+      <div class="auth-card">
       <div class="auth-brand">
         <svg class="auth-logo" viewBox="0 0 1910 823" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="10X CRM">
           <path fill="var(--primary)" d="M1142.596,507.546h123.766l-118.241,133.712h214.934l87.299-101.644,86.195,101.644h213.829l-116.031-133.712h240.902v256.373H248.604v-121.556h291.183l1.658-1.658v-133.159h33.704c20.106,45.552,54.433,84.406,98.161,108.485,88.909,48.958,244.445,50.851,338.356,15.301,58.658-22.205,107.87-64.675,130.93-123.786Z"/>
@@ -51,11 +63,18 @@
 
       <p class="auth-foot">Already have an account? <a href="index.html">Log in</a></p>
     </div>
+    </div>
   </div>
 
   <script src="js/storage.js"></script>
   <script src="js/ui.js"></script>
   <script src="js/guard.js"></script>
   <script src="js/signup.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+  <script src="js/glass-depth-bg.js?v=4"></script>
+  <script src="js/glass-liquid.js?v=5"></script>
+  <script src="js/glass-ui.js?v=7"></script>
+
+
 </body>
 </html>

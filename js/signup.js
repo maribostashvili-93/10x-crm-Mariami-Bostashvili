@@ -1,0 +1,83 @@
+// ===== signup.js =====
+
+const signupForm = document.getElementById('signupForm');
+
+// ---------- helpers ----------
+function showError(inputId, message) {
+  const input = document.getElementById(inputId);
+  const errorEl = document.getElementById(inputId + 'Err');
+
+  input.classList.add('input-error');
+  errorEl.textContent = message;
+  errorEl.classList.add('show');
+}
+
+function clearErrors() {
+  for (const input of document.querySelectorAll('.input')) {
+    input.classList.remove('input-error');
+  }
+  for (const errorEl of document.querySelectorAll('.error-text')) {
+    errorEl.textContent = '';
+    errorEl.classList.remove('show');
+  }
+}
+
+function isValidEmail(email) {
+  if (!email.includes('@')) return false;
+  const afterAt = email.split('@')[1];
+  return afterAt.includes('.');
+}
+
+function isValidPassword(password) {
+  const hasLetter = /[a-zA-Z]/.test(password);
+  const hasNumber = /[0-9]/.test(password);
+  return password.length >= 8 && hasLetter && hasNumber;
+}
+
+// ---------- submit ----------
+signupForm.addEventListener('submit', function (event) {
+  event.preventDefault();
+
+  // read the values (INSIDE the function!)
+  const fullName = document.getElementById('fullName').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const company = document.getElementById('company').value.trim();
+  const password = document.getElementById('password').value;
+  const confirm = document.getElementById('confirm').value;
+
+  clearErrors();
+  let isValid = true;
+
+  // Full Name
+  if (fullName.length < 3) {
+    showError('fullName', 'Full name must be at least 3 characters');
+    isValid = false;
+  }
+
+  // Email
+  const emailLower = email.toLowerCase();
+  if (!isValidEmail(email)) {
+    showError('email', 'Please enter a valid email address');
+    isValid = false;
+  } else if (getUsers().some((u) => u.email === emailLower)) {
+    showError('email', 'An account with this email already exists');
+    isValid = false;
+  }
+
+  // Password
+  if (!isValidPassword(password)) {
+    showError(
+      'password',
+      'Password must be at least 8 characters and contain a letter and a number',
+    );
+    isValid = false;
+  }
+
+  // Confirm Password
+  if (confirm !== password) {
+    showError('confirm', 'Passwords do not match');
+    isValid = false;
+  }
+
+  if (!isValid) return; // stop if any field failed
+});
