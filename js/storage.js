@@ -55,9 +55,25 @@ function clearSession() {
   removeFromStorage(STORAGE_KEYS.session);
 }
 
+// The full record of whoever is logged in, or null.
+// The session only stores userId, so the up to date data lives in crm_users -
+// that way a name changed on the profile page is visible everywhere at once.
+function getCurrentUser() {
+  const session = getSession();
+  if (!session) {
+    return null;
+  }
+
+  return (
+    getUsers().find(function (user) {
+      return user.id === session.userId;
+    }) || null
+  );
+}
+
 //  Clients
 function getClients() {
-  return getFromStorage(STORAGE_KEYS.clients, []);
+  return getFromStorage(STORAGE_KEYS.clients, null);
 }
 
 function saveClients(clients) {
@@ -70,9 +86,9 @@ function clearClients() {
 
 //  Theme
 function getTheme() {
-  return getFromStorage(STORAGE_KEYS.theme, 'light');
+  return localStorage.getItem(STORAGE_KEYS.theme) || 'light';
 }
 
 function saveTheme(theme) {
-  saveToStorage(STORAGE_KEYS.theme, theme);
+  localStorage.setItem(STORAGE_KEYS.theme, theme);
 }
