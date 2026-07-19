@@ -1,0 +1,1 @@
+initProtectedPage('profile');

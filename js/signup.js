@@ -1,26 +1,9 @@
-// ===== signup.js =====
+// signup.js
 
 const signupForm = document.getElementById('signupForm');
 
-// ---------- helpers ----------
-function showError(inputId, message) {
-  const input = document.getElementById(inputId);
-  const errorEl = document.getElementById(inputId + 'Err');
-
-  input.classList.add('input-error');
-  errorEl.textContent = message;
-  errorEl.classList.add('show');
-}
-
-function clearErrors() {
-  for (const input of document.querySelectorAll('.input')) {
-    input.classList.remove('input-error');
-  }
-  for (const errorEl of document.querySelectorAll('.error-text')) {
-    errorEl.textContent = '';
-    errorEl.classList.remove('show');
-  }
-}
+initPublicPage();
+clearErrorOnInput(signupForm);
 
 function isValidEmail(email) {
   if (!email.includes('@')) return false;
