@@ -5,6 +5,15 @@ const STORAGE_KEYS = {
   theme: 'crm_theme',
 };
 
+const DEMO_USER = {
+  id: 'demo-user',
+  fullName: 'Demo User',
+  email: 'demo@crm.com',
+  password: 'Demo123!',
+  company: '10X CRM',
+  createdAt: '2026-07-21T00:00:00.000Z',
+};
+
 function saveToStorage(key, value) {
   try {
     const stringValue = JSON.stringify(value);
@@ -42,6 +51,18 @@ function saveUsers(users) {
   saveToStorage(STORAGE_KEYS.users, users);
 }
 
+function ensureDemoUser() {
+  const users = getUsers();
+  const demoUserExists = users.some(function (user) {
+    return user.email === DEMO_USER.email;
+  });
+
+  if (!demoUserExists) {
+    users.push({ ...DEMO_USER });
+    saveUsers(users);
+  }
+}
+
 //  Session
 function getSession() {
   return getFromStorage(STORAGE_KEYS.session, null);
@@ -55,9 +76,6 @@ function clearSession() {
   removeFromStorage(STORAGE_KEYS.session);
 }
 
-// The full record of whoever is logged in, or null.
-// The session only stores userId, so the up to date data lives in crm_users -
-// that way a name changed on the profile page is visible everywhere at once.
 function getCurrentUser() {
   const session = getSession();
   if (!session) {
@@ -92,3 +110,5 @@ function getTheme() {
 function saveTheme(theme) {
   localStorage.setItem(STORAGE_KEYS.theme, theme);
 }
+
+ensureDemoUser();
