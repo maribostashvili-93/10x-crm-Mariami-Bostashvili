@@ -78,25 +78,26 @@
         vec2 wuv = uv - (uv - uMouse) * well * 0.6;
 
         /* base vertical gradient */
-        vec3 top    = mix(vec3(0.96,0.97,1.0), vec3(0.02,0.03,0.10), uDark);
-        vec3 bottom = mix(vec3(0.86,0.91,1.0), vec3(0.04,0.08,0.24), uDark);
+        vec3 top    = mix(vec3(0.84,0.82,0.93), vec3(0.02,0.03,0.10), uDark);
+        vec3 bottom = mix(vec3(0.74,0.78,0.90), vec3(0.04,0.08,0.24), uDark);
         vec3 col = mix(top, bottom, uv.y);
 
         /* slow animated soft blobs (blue / cyan / violet) */
         float t = uTime * 0.05;
-        vec3 c1 = mix(vec3(0.70,0.84,1.0), vec3(0.16,0.30,0.92), uDark);
-        vec3 c2 = mix(vec3(0.85,0.82,1.0), vec3(0.46,0.34,0.96), uDark);
-        vec3 c3 = mix(vec3(0.80,0.95,1.0), vec3(0.10,0.55,0.86), uDark);
-        col += c1 * blob(wuv, vec2(0.22 + sin(t)*0.06, 0.76 + cos(t*0.8)*0.05), 0.55) * (uDark*0.5 + 0.28);
-        col += c2 * blob(wuv, vec2(0.80 + cos(t*0.7)*0.06, 0.24 + sin(t)*0.05), 0.52) * (uDark*0.45 + 0.24);
-        col += c3 * blob(wuv, vec2(0.55 + sin(t*0.5)*0.05, 0.55), 0.42) * (uDark*0.4 + 0.2);
+        vec3 c1 = mix(vec3(0.88,0.82,1.0), vec3(0.16,0.30,0.92), uDark);
+        vec3 c2 = mix(vec3(0.80,0.73,0.96), vec3(0.46,0.34,0.96), uDark);
+        vec3 c3 = mix(vec3(0.94,0.89,1.0), vec3(0.10,0.55,0.86), uDark);
+        col += c1 * blob(wuv, vec2(0.22 + sin(t)*0.06, 0.76 + cos(t*0.8)*0.05), 0.55) * (uDark*0.5 + 0.1);
+        col += c2 * blob(wuv, vec2(0.80 + cos(t*0.7)*0.06, 0.24 + sin(t)*0.05), 0.52) * (uDark*0.45 + 0.08);
+        col += c3 * blob(wuv, vec2(0.55 + sin(t*0.5)*0.05, 0.55), 0.42) * (uDark*0.4 + 0.07);
 
         /* warped grid — bends inward near the cursor, fades with distance */
         float scale = 26.0;
         vec2 gv = abs(fract(wuv * scale) - 0.5);
         float line = smoothstep(0.46, 0.5, max(gv.x, gv.y));
-        float gridA = line * (uDark*0.05 + 0.04) * smoothstep(1.1, 0.15, d);
-        col += vec3(0.55, 0.72, 1.0) * gridA;
+        float gridA = line * (uDark*0.015 + 0.075) * smoothstep(1.1, 0.15, d);
+        vec3 gridColor = mix(vec3(0.92,0.78,1.0), vec3(0.55,0.72,1.0), uDark);
+        col += gridColor * gridA;
 
         /* subtle glow inside the depth well */
         col += mix(vec3(0.35,0.55,1.0), vec3(0.20,0.40,1.0), uDark) * well * 0.14;

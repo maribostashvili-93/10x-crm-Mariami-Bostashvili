@@ -41,7 +41,7 @@ body.theme-dark {
   --surface-solid: #0c122c; /* for <option> and other opaque needs */
   --border: rgba(255, 255, 255, 0.14);
   --text: #f3f6ff;
-  --text-muted: #9aa8d4;
+  --text-muted: #d6def7;
 
   --shadow: 0 18px 50px rgba(4, 8, 30, 0.5);
   --shadow-sm: 0 8px 26px rgba(4, 8, 30, 0.34);
@@ -52,13 +52,15 @@ body.theme-dark {
 }
 
 body.theme-light {
-  --bg: #f7f9ff;
-  --bg-2: #eef4ff;
-  --surface: rgba(255, 255, 255, 0.6);
+  --bg: #bbc5d9;
+  --bg-2: #a8b6d0;
+  --surface: rgba(255, 255, 255, 0.28);
   --surface-solid: #ffffff;
-  --border: rgba(20, 25, 60, 0.1);
-  --text: #10132a;
-  --text-muted: #5a6488;
+  --border: rgba(116, 94, 184, 0.22);
+  --text: #211a3d;
+  --text-muted: #655d83;
+  --primary: #7566df;
+  --primary-2: #998bea;
 
   --shadow: 0 18px 50px rgba(30, 50, 120, 0.12);
   --shadow-sm: 0 8px 26px rgba(30, 50, 120, 0.08);
@@ -95,11 +97,9 @@ body::before {
 }
 
 body.theme-light::before {
-  background:
-    radial-gradient(38rem 38rem at 8% -6%, rgba(183, 217, 255, 0.85), transparent 62%),
-    radial-gradient(34rem 34rem at 104% 104%, rgba(217, 212, 255, 0.85), transparent 60%),
-    radial-gradient(28rem 28rem at 80% 8%, rgba(201, 210, 255, 0.7), transparent 62%),
-    radial-gradient(26rem 26rem at 22% 92%, rgba(220, 233, 255, 0.8), transparent 60%);
+  background: none;
+  filter: none;
+  animation: none;
 }
 
 @keyframes aurora-drift {
@@ -355,6 +355,153 @@ body.theme-light .modal-backdrop {
   background: rgba(16, 19, 42, 0.42);
 }
 
+/* Add Client: deep glass dialog with decorative liquid spheres. */
+#addModal {
+  background: rgba(4, 7, 24, 0.42);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+}
+#addModal .modal {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  max-width: 56rem;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 3rem;
+  background: linear-gradient(
+    145deg,
+    rgba(17, 24, 58, 0.58),
+    rgba(7, 11, 31, 0.42)
+  );
+  backdrop-filter: blur(36px) saturate(175%);
+  -webkit-backdrop-filter: blur(36px) saturate(175%);
+  box-shadow:
+    0 34px 90px rgba(1, 3, 16, 0.58),
+    inset 0 1px 0 rgba(255, 255, 255, 0.38),
+    inset 1px 0 0 rgba(255, 255, 255, 0.12),
+    0 0 0 1px rgba(125, 105, 255, 0.1);
+}
+#modalLiquid {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  opacity: 0.46;
+  pointer-events: none;
+  filter: saturate(115%);
+}
+#modalLiquid canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none !important;
+}
+#addModal .modal::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  border-radius: inherit;
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.08),
+    rgba(8, 12, 35, 0.22)
+  );
+  backdrop-filter: blur(6px) saturate(120%);
+  -webkit-backdrop-filter: blur(6px) saturate(120%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.06);
+}
+#addModal .modal > :not(#modalLiquid) {
+  position: relative;
+  z-index: 2;
+}
+#addModal .modal-head,
+#addModal .modal-foot {
+  background: rgba(255, 255, 255, 0.025);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+#addModal .modal-head::before {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.9) 28%,
+    rgba(172, 150, 255, 0.9) 72%,
+    transparent
+  );
+}
+#addModal .modal-body {
+  padding: 2.6rem;
+}
+#addModal .field label {
+  color: var(--text);
+}
+#addModal .input,
+#addModal select.input {
+  min-height: 4.8rem;
+  border-color: rgba(220, 224, 255, 0.25);
+  border-radius: 1.4rem;
+  background: rgba(255, 255, 255, 0.065);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.09),
+    0 8px 22px rgba(1, 3, 16, 0.1);
+}
+#addModal .input:focus,
+#addModal select.input:focus {
+  border-color: rgba(164, 145, 255, 0.72);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 0 0 3px rgba(117, 102, 223, 0.16),
+    0 10px 26px rgba(1, 3, 16, 0.12);
+}
+
+body.theme-light #addModal {
+  background: rgba(55, 42, 104, 0.24);
+}
+body.theme-light #addModal .modal {
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.48),
+    rgba(237, 229, 255, 0.24)
+  );
+  border-color: rgba(255, 255, 255, 0.72);
+  box-shadow:
+    0 34px 90px rgba(55, 42, 104, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.96),
+    inset 1px 0 0 rgba(255, 255, 255, 0.5);
+}
+body.theme-light #addModal .modal-head,
+body.theme-light #addModal .modal-foot {
+  background: rgba(255, 255, 255, 0.12);
+}
+body.theme-light #addModal .input,
+body.theme-light #addModal select.input {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(117, 102, 223, 0.24);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.82),
+    0 8px 22px rgba(76, 59, 138, 0.08);
+}
+body.theme-light #modalLiquid {
+  opacity: 0.34;
+}
+body.theme-light #addModal .modal::before {
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.22),
+    rgba(241, 235, 255, 0.12)
+  );
+  backdrop-filter: blur(7px) saturate(115%);
+  -webkit-backdrop-filter: blur(7px) saturate(115%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.72),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.18);
+}
+
 /* --------------------------------------------------------------------------
    5. INPUTS AND BUTTONS
    app.css gives .input `background: var(--bg)`, which is opaque, so it needs
@@ -373,7 +520,35 @@ body.theme-light .input,
 body.theme-light select.input,
 body.theme-light textarea.input,
 body.theme-light .search-box input {
-  background: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.34);
+  border-color: rgba(116, 94, 184, 0.24);
+}
+body.theme-light .toolbar {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(117, 102, 223, 0.16);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.52);
+}
+body.theme-light .toolbar .input,
+body.theme-light .toolbar .search-box input {
+  min-height: 4.6rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  border: 1px solid rgba(117, 102, 223, 0.3);
+  border-radius: 1.4rem;
+  background: rgba(255, 255, 255, 0.4);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.82),
+    0 5px 14px rgba(90, 72, 154, 0.08);
+}
+body.theme-light .toolbar .input:focus,
+body.theme-light .toolbar .search-box input:focus {
+  border-color: rgba(117, 102, 223, 0.62);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 0 0 3px rgba(117, 102, 223, 0.12);
+}
+body.theme-light .toolbar .search-box svg {
+  color: rgba(101, 88, 153, 0.58);
 }
 
 /* <option> renders outside the glass, so it needs a solid colour. */
@@ -427,7 +602,7 @@ select.input option {
   transform: translateX(3px);
 }
 body.theme-light .nav-link:hover {
-  background: rgba(20, 25, 60, 0.05);
+  background: rgba(117, 102, 223, 0.08);
 }
 
 /* The active page reads as lit rather than merely tinted. */
@@ -438,8 +613,8 @@ body.theme-light .nav-link:hover {
   box-shadow: 0 6px 20px rgba(99, 91, 255, 0.2);
 }
 body.theme-light .nav-link.active {
-  background: linear-gradient(135deg, rgba(99, 91, 255, 0.14), rgba(41, 72, 255, 0.09));
-  border-color: rgba(99, 91, 255, 0.28);
+  background: linear-gradient(135deg, rgba(117, 102, 223, 0.18), rgba(153, 139, 234, 0.12));
+  border-color: rgba(117, 102, 223, 0.34);
 }
 
 /* --------------------------------------------------------------------------
@@ -470,11 +645,11 @@ body.theme-light .nav-link.active {
   color: var(--text);
 }
 body.theme-light .chip:hover {
-  background: rgba(20, 25, 60, 0.05);
+  background: rgba(117, 102, 223, 0.08);
 }
 body.theme-light .chip.active {
-  background: linear-gradient(135deg, rgba(99, 91, 255, 0.14), rgba(41, 72, 255, 0.09));
-  border-color: rgba(99, 91, 255, 0.3);
+  background: linear-gradient(135deg, rgba(117, 102, 223, 0.2), rgba(153, 139, 234, 0.14));
+  border-color: rgba(117, 102, 223, 0.4);
 }
 
 /* --------------------------------------------------------------------------
@@ -523,9 +698,9 @@ body.theme-light .chip.active {
   color: #ff8a8f;
 }
 body.theme-light .badge-lead {
-  background: rgba(41, 72, 255, 0.09);
-  border-color: rgba(41, 72, 255, 0.3);
-  color: #2948ff;
+  background: rgba(117, 102, 223, 0.1);
+  border-color: rgba(117, 102, 223, 0.34);
+  color: #6d5bd6;
 }
 body.theme-light .badge-contacted {
   background: rgba(76, 63, 208, 0.09);
@@ -637,6 +812,7 @@ body.theme-light .badge-lost {
 
 .client-card {
   position: relative;
+  overflow: hidden;
   border-radius: var(--radius);
   border: 1px solid var(--border);
   background: var(--surface);
@@ -651,16 +827,94 @@ body.theme-light .badge-lost {
   flex-direction: column;
   gap: 1.2rem;
   transition:
-    transform 0.22s cubic-bezier(0.22, 0.68, 0, 1.2),
-    box-shadow 0.22s ease;
+    box-shadow 0.22s ease,
+    border-color 0.22s ease,
+    backdrop-filter 0.22s ease;
 }
 .client-card:hover {
-  transform: translateY(-0.5rem);
+  transform: none;
   box-shadow:
     var(--shadow),
     inset 0 1px 0 var(--glass-edge);
 }
-
+.client-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  opacity: 1;
+  transition: opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.client-card:hover::before {
+  opacity: 0;
+}
+.client-card > * {
+  position: relative;
+  z-index: 1;
+}
+body.theme-dark .client-card {
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.075) 0%,
+    rgba(255, 255, 255, 0.018) 52%,
+    rgba(255, 255, 255, 0.038) 100%
+  );
+  backdrop-filter: blur(28px) saturate(175%);
+  -webkit-backdrop-filter: blur(28px) saturate(175%);
+  border-color: rgba(255, 255, 255, 0.38);
+  box-shadow:
+    0 14px 34px rgba(0, 0, 0, 0.26),
+    inset 0 1px 0 rgba(255, 255, 255, 0.48),
+    inset 1px 0 0 rgba(255, 255, 255, 0.16);
+}
+body.theme-dark .client-card::before {
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.055),
+    rgba(255, 255, 255, 0.012)
+  );
+}
+body.theme-dark .client-card:hover {
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border-color: rgba(255, 255, 255, 0.58);
+  box-shadow:
+    0 20px 46px rgba(0, 0, 0, 0.48),
+    inset 0 1px 0 rgba(255, 255, 255, 0.62),
+    inset 1px 0 0 rgba(255, 255, 255, 0.22);
+}
+body.theme-light .client-card {
+  background:
+    radial-gradient(circle at 12% 0%, rgba(255, 255, 255, 0.28), transparent 42%),
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.2) 0%,
+      rgba(239, 231, 255, 0.07) 52%,
+      rgba(255, 255, 255, 0.12) 100%
+    );
+  backdrop-filter: blur(30px) saturate(170%);
+  -webkit-backdrop-filter: blur(30px) saturate(170%);
+  border-color: rgba(255, 255, 255, 0.68);
+  box-shadow:
+    0 14px 34px rgba(66, 54, 112, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.94),
+    inset 1px 0 0 rgba(255, 255, 255, 0.34);
+}
+body.theme-light .client-card::before {
+  background:
+    radial-gradient(circle at 12% 0%, rgba(255, 255, 255, 0.24), transparent 44%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.14), rgba(239, 231, 255, 0.04));
+}
+body.theme-light .client-card:hover {
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border-color: rgba(255, 255, 255, 0.82);
+  box-shadow:
+    0 18px 42px rgba(66, 54, 112, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.96);
+}
 .client-card__top {
   display: flex;
   align-items: center;
@@ -718,6 +972,35 @@ body.theme-light .badge-lost {
   flex: 1;
   padding: 0.7rem 1rem;
   font-size: 1.3rem;
+}
+body.theme-light .client-card__foot select.input {
+  min-height: 3.8rem;
+  padding: 0.7rem 1.2rem;
+  border: 1px solid rgba(117, 102, 223, 0.34);
+  border-radius: 1.2rem;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.5),
+    rgba(237, 229, 255, 0.3)
+  );
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 5px 14px rgba(90, 72, 154, 0.1);
+  color-scheme: light;
+}
+body.theme-light .client-card__foot select.badge-lead {
+  color: #6d5bd6;
+  border-color: rgba(109, 91, 214, 0.46);
+}
+body.theme-light .client-card__foot select.input:focus {
+  border-color: rgba(117, 102, 223, 0.68);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    0 0 0 3px rgba(117, 102, 223, 0.12);
+}
+body.theme-light .client-card__foot select.input option {
+  background: #f7f4ff;
+  color: #211a3d;
 }
 
 .client-card__del {
@@ -1088,6 +1371,9 @@ body.theme-light .pipe-bar {
   }
   .client-card:hover {
     transform: none;
+  }
+  .client-card::before {
+    transition: none;
   }
 }
 
