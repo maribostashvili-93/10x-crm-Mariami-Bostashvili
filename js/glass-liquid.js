@@ -9,12 +9,11 @@
    Self-contained: reads no CRM state, writes no storage. Delete
    the <script> tag and the panel falls back to its CSS gradient.
 
-   Requires: three.min.js (r134) and a #liquid or #modalLiquid host.
+   Requires: three.min.js (r134) and a host element #liquid.
    ============================================================ */
 
 (function () {
-  const host =
-    document.getElementById("liquid") || document.getElementById("modalLiquid");
+  const host = document.getElementById("liquid");
   if (!host || !window.THREE) return;
 
   /* ── Constants ──────────────────────────────────────────── */

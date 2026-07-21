@@ -53,7 +53,7 @@
     document.body.addEventListener(
       'mousemove',
       (e) => {
-        const card = e.target.closest('.card, .stat');
+        const card = e.target.closest('.card, .client-card, .stat');
         if (!card) return;
         const b = card.getBoundingClientRect();
         const dx = (e.clientX - (b.left + b.width / 2)) / (b.width / 2);
@@ -68,7 +68,7 @@
     document.body.addEventListener(
       'mouseout',
       (e) => {
-        const card = e.target.closest('.card, .stat');
+        const card = e.target.closest('.card, .client-card, .stat');
         /* ignore moves between children of the same card */
         if (!card || card.contains(e.relatedTarget)) return;
         card.style.transform = '';
