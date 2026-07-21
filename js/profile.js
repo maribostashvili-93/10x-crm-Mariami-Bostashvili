@@ -20,6 +20,7 @@ function renderProfile() {
   document.getElementById('pfAvatar').textContent = initialsOf(user.fullName);
   document.getElementById('pfName').textContent = user.fullName;
   document.getElementById('pfEmail').textContent = user.email;
+  document.getElementById('pfCompany').textContent = user.company || 'No company';
   document.getElementById('pfMeta').textContent =
     `Member since ${new Date(user.createdAt).toLocaleDateString()}`;
 
