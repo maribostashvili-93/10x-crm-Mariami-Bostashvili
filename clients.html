@@ -181,9 +181,17 @@
               <h1>Clients</h1>
               <p class="sub">Manage your pipeline and relationships</p>
             </div>
-            <div class="flex gap-1">
+            <div class="flex gap-1 page-actions">
+              <button class="btn btn-outline" id="importBtn">Import Excel</button>
               <button class="btn btn-outline" id="exportBtn">Export CSV</button>
               <button class="btn btn-primary" id="addClientBtn">+ Add Client</button>
+              <input
+                type="file"
+                id="importFile"
+                accept=".xlsx,.xls,.csv"
+                aria-label="Import clients from Excel or CSV"
+                hidden
+              />
             </div>
           </div>
 
@@ -231,8 +239,8 @@
     </div>
 
     <!--Add Client modal-->
-    <div class="modal-backdrop" id="addModal">
-      <div class="modal">
+    <div class="modal-backdrop" id="addModal" aria-hidden="true">
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="addModalTitle">
         <div id="modalLiquid" aria-hidden="true"></div>
         <div class="modal-head">
           <h3 id="addModalTitle">Add Client</h3>
@@ -250,13 +258,21 @@
 
               <div class="field full">
                 <label for="cEmail">Email</label>
-                <input class="input" type="text" id="cEmail" placeholder="client@example.com" />
+                <input class="input" type="email" id="cEmail" placeholder="client@example.com" autocomplete="email" />
                 <small class="error-text" id="cEmailErr"></small>
               </div>
 
               <div class="field">
                 <label for="cPhone">Phone</label>
-                <input class="input" type="text" id="cPhone" placeholder="Optional" />
+                <input
+                  class="input"
+                  type="tel"
+                  id="cPhone"
+                  placeholder="Optional"
+                  inputmode="tel"
+                  autocomplete="tel"
+                  maxlength="24"
+                />
                 <small class="error-text" id="cPhoneErr"></small>
               </div>
 
@@ -293,10 +309,10 @@
     </div>
 
     <!-- Details modal -->
-    <div class="modal-backdrop" id="detailModal">
-      <div class="modal modal-lg">
+    <div class="modal-backdrop" id="detailModal" aria-hidden="true">
+      <div class="modal modal-lg" role="dialog" aria-modal="true" aria-labelledby="detailModalTitle">
         <div class="modal-head">
-          <h3>Client Details</h3>
+          <h3 id="detailModalTitle">Client Details</h3>
           <button class="icon-btn" data-close aria-label="Close">&times;</button>
         </div>
         <div class="modal-body" id="detailBody"><!-- filled by JS --></div>

@@ -93,6 +93,31 @@ function clearErrorOnInput(form) {
   });
 }
 
+function isValidEmail(email) {
+  return /^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)+$/.test(
+    email.trim(),
+  );
+}
+
+function sanitizePhone(phone) {
+  return phone.replace(/[^\d+()\s-]/g, '');
+}
+
+function isValidPhone(phone) {
+  const trimmedPhone = phone.trim();
+
+  if (!trimmedPhone) {
+    return true;
+  }
+
+  if (!/^\+?[\d()\s-]+$/.test(trimmedPhone)) {
+    return false;
+  }
+
+  const digitCount = trimmedPhone.replace(/\D/g, '').length;
+  return digitCount >= 6 && digitCount <= 15;
+}
+
 //formting
 function formatMoney(value) {
   return `$${Number(value).toLocaleString('en-US')}`;

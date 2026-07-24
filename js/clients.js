@@ -2,6 +2,8 @@ let statusFilter = 'All';
 let searchTerm = '';
 let sortMode = 'newest';
 let openClientId = null;
+let lastModalTrigger = null;
+let xlsxLibraryPromise = null;
 
 const STATUS_BADGES = {
   Lead: 'badge-lead',
@@ -56,6 +58,8 @@ function createClientCard(client) {
   const card = document.createElement('article');
   card.className = 'client-card';
   card.dataset.id = client.id;
+  card.tabIndex = 0;
+  card.setAttribute('aria-label', `Open details for ${client.name}`);
 
   const top = document.createElement('div');
   top.className = 'client-card__top';
@@ -157,6 +161,205 @@ function refreshClients() {
   renderClients(getVisibleClients());
 }
 
+function protectSpreadsheetValue(value, columnIndex) {
+  const text = String(value ?? '');
+
+  if (columnIndex === 2 && text.startsWith('+')) {
+    return `'${text}`;
+  }
+
+  return /^[=+\-@]/.test(text) ? `'${text}` : text;
+}
+
+function escapeCsvValue(value, columnIndex) {
+  const protectedValue = protectSpreadsheetValue(value, columnIndex);
+  return `"${protectedValue.replace(/"/g, '""')}"`;
+}
+
+function exportClientsCsv() {
+  if (!clients.length) {
+    showToast('There are no clients to export.', 'error');
+    return;
+  }
+
+  const headers = ['Name', 'Email', 'Phone', 'Company', 'Status', 'Deal Value'];
+  const rows = clients.map(function (client) {
+    return [
+      client.name,
+      client.email,
+      client.phone || '',
+      client.company || '',
+      client.status,
+      client.dealValue,
+    ];
+  });
+  const csv = [headers, ...rows]
+    .map(function (row) {
+      return row
+        .map(function (value, columnIndex) {
+          return escapeCsvValue(value, columnIndex);
+        })
+        .join(',');
+    })
+    .join('\r\n');
+
+  const blob = new Blob([`\uFEFF${csv}`], { type: 'text/csv;charset=utf-8' });
+  const downloadUrl = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = downloadUrl;
+  link.download = `clients-${new Date().toISOString().slice(0, 10)}.csv`;
+  document.body.append(link);
+  link.click();
+  link.remove();
+  setTimeout(function () {
+    URL.revokeObjectURL(downloadUrl);
+  }, 1000);
+}
+
+function normalizeImportRow(row) {
+  const fields = {};
+
+  for (const [key, value] of Object.entries(row)) {
+    fields[String(key).trim().toLowerCase().replace(/[\s_-]+/g, '')] = value;
+  }
+
+  const firstName = String(fields.firstname ?? '').trim();
+  const lastName = String(fields.lastname ?? '').trim();
+
+  return {
+    name: String(fields.name ?? fields.fullname ?? `${firstName} ${lastName}`).trim(),
+    email: String(fields.email ?? '').trim(),
+    phone: String(fields.phone ?? fields.telephone ?? '')
+      .trim()
+      .replace(/^'(?=\+)/, ''),
+    company: String(fields.company ?? fields.companyname ?? '').trim(),
+    status: String(fields.status || 'Lead').trim(),
+    dealValue: fields.dealvalue ?? fields.deal ?? fields.value ?? '',
+  };
+}
+
+function parseImportedDealValue(value) {
+  if (typeof value === 'number') {
+    return value;
+  }
+
+  return Number(String(value).replace(/[$€£₾,\s]/g, ''));
+}
+
+function importClientRows(rows) {
+  const importedClients = [];
+  const existingEmails = new Set(
+    clients.map(function (client) {
+      return client.email.trim().toLowerCase();
+    }),
+  );
+
+  for (const row of rows) {
+    const values = normalizeImportRow(row);
+    const normalizedEmail = values.email.toLowerCase();
+    const normalizedStatus = CLIENT_STATUSES.find(function (status) {
+      return status.toLowerCase() === values.status.toLowerCase();
+    });
+    const numericDealValue = parseImportedDealValue(values.dealValue);
+
+    if (
+      values.name.length < 3 ||
+      !isValidEmail(normalizedEmail) ||
+      !isValidPhone(values.phone) ||
+      !normalizedStatus ||
+      !Number.isFinite(numericDealValue) ||
+      numericDealValue <= 0 ||
+      existingEmails.has(normalizedEmail)
+    ) {
+      continue;
+    }
+
+    existingEmails.add(normalizedEmail);
+    importedClients.push({
+      id: createLocalClientId(),
+      apiId: null,
+      name: values.name,
+      email: normalizedEmail,
+      phone: values.phone.trim(),
+      company: values.company,
+      image: `${API_BASE}/icon/${values.name.split(/\s+/)[0].toLowerCase()}/128`,
+      status: normalizedStatus,
+      dealValue: numericDealValue,
+      notes: [],
+      createdAt: new Date().toISOString(),
+    });
+  }
+
+  if (!importedClients.length) {
+    return 0;
+  }
+
+  const nextClients = [...importedClients, ...clients];
+  persistClients(nextClients);
+  clients = nextClients;
+  refreshClients();
+  return importedClients.length;
+}
+
+function loadXlsxLibrary() {
+  if (typeof XLSX !== 'undefined') {
+    return Promise.resolve(XLSX);
+  }
+
+  if (xlsxLibraryPromise) {
+    return xlsxLibraryPromise;
+  }
+
+  xlsxLibraryPromise = new Promise(function (resolve, reject) {
+    const script = document.createElement('script');
+    script.src = 'https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js';
+    script.onload = function () {
+      if (typeof XLSX === 'undefined') {
+        reject(new Error('Excel import library could not be loaded'));
+        return;
+      }
+
+      resolve(XLSX);
+    };
+    script.onerror = function () {
+      reject(new Error('Excel import library could not be loaded'));
+    };
+    document.head.append(script);
+  }).catch(function (error) {
+    xlsxLibraryPromise = null;
+    throw error;
+  });
+
+  return xlsxLibraryPromise;
+}
+
+async function importClientsFile(file) {
+  const xlsx = await loadXlsxLibrary();
+
+  if (file.size > 2 * 1024 * 1024) {
+    throw new Error('The selected file is larger than 2 MB');
+  }
+
+  const workbook = xlsx.read(await file.arrayBuffer(), { type: 'array' });
+
+  if (!workbook.SheetNames.length) {
+    throw new Error('The selected file does not contain a worksheet');
+  }
+
+  const rows = workbook.SheetNames.flatMap(function (sheetName) {
+    return xlsx.utils.sheet_to_json(workbook.Sheets[sheetName], {
+      defval: '',
+      raw: false,
+    });
+  });
+
+  if (rows.length > 5000) {
+    throw new Error('The selected file contains more than 5,000 rows');
+  }
+
+  return importClientRows(rows);
+}
+
 function setClientsAreaMessage(message, withRetry = false, loading = false) {
   const host = document.getElementById('clientsArea');
   host.textContent = '';
@@ -208,7 +411,7 @@ function validateClient({ name, email, phone, dealValue }, existingClients) {
     errors.cName = 'Name must be at least 3 characters';
   }
 
-  if (!normalizedEmail.includes('@') || !normalizedEmail.split('@')[1]?.includes('.')) {
+  if (!isValidEmail(normalizedEmail)) {
     errors.cEmail = 'Please enter a valid email address';
   } else if (
     existingClients.some(function (client) {
@@ -218,7 +421,7 @@ function validateClient({ name, email, phone, dealValue }, existingClients) {
     errors.cEmail = 'A client with this email already exists';
   }
 
-  if (phone.trim() && phone.trim().length < 6) {
+  if (!isValidPhone(phone)) {
     errors.cPhone = 'Phone number looks too short';
   }
 
@@ -262,8 +465,9 @@ async function addClient(values) {
 
   const createdClient = await response.json();
 
-  clients.unshift({
-    id: createdClient.id,
+  const newClient = {
+    id: createLocalClientId(),
+    apiId: createdClient.id,
     name: cleanName,
     email: normalizedEmail,
     phone: values.phone.trim(),
@@ -273,9 +477,11 @@ async function addClient(values) {
     dealValue: numericDealValue,
     notes: [],
     createdAt: new Date().toISOString(),
-  });
+  };
 
-  saveClients(clients);
+  const nextClients = [newClient, ...clients];
+  persistClients(nextClients);
+  clients = nextClients;
   refreshClients();
   showToast('Client added \u2713', 'success');
 
@@ -287,8 +493,18 @@ async function deleteClient(id) {
     return;
   }
 
+  const clientToDelete = clients.find(function (client) {
+    return String(client.id) === String(id);
+  });
+
+  if (!clientToDelete) {
+    return;
+  }
+
+  const apiId = clientToDelete.apiId ?? clientToDelete.id;
+
   try {
-    const response = await fetch(`${API_BASE}/users/${id}`, {
+    const response = await fetch(`${API_BASE}/users/${encodeURIComponent(apiId)}`, {
       method: 'DELETE',
     });
 
@@ -301,26 +517,44 @@ async function deleteClient(id) {
     return;
   }
 
-  clients = clients.filter(function (client) {
-    return client.id !== id;
+  const nextClients = clients.filter(function (client) {
+    return String(client.id) !== String(id);
   });
 
-  saveClients(clients);
+  try {
+    persistClients(nextClients);
+  } catch (error) {
+    console.error(error);
+    showToast(error.message, 'error');
+    return;
+  }
+
+  clients = nextClients;
+  removeClientReminders(id);
   refreshClients();
   showToast('Client deleted', 'success');
 }
 
 function changeStatus(id, status) {
   const client = clients.find(function (item) {
-    return item.id === id;
+    return String(item.id) === String(id);
   });
 
   if (!client) {
     return;
   }
 
+  const previousStatus = client.status;
   client.status = status;
-  saveClients(clients);
+
+  try {
+    persistClients(clients);
+  } catch (error) {
+    client.status = previousStatus;
+    console.error(error);
+    showToast(error.message, 'error');
+  }
+
   refreshClients();
 }
 
@@ -411,9 +645,9 @@ function renderNotes(client, host) {
   host.append(noteControls, reminderButton);
 }
 
-function openDetail(id) {
+function openDetail(id, trigger) {
   const client = clients.find(function (item) {
-    return item.id === id;
+    return String(item.id) === String(id);
   });
 
   if (!client) {
@@ -457,7 +691,11 @@ function openDetail(id) {
 
   detailBody.append(header, rows);
   renderNotes(client, detailBody);
-  document.getElementById('detailModal').classList.add('open');
+  const detailModal = document.getElementById('detailModal');
+
+  if (!detailModal.classList.contains('open')) {
+    openModal(detailModal, trigger || document.activeElement);
+  }
 }
 
 function addNote(id, rawText) {
@@ -468,7 +706,7 @@ function addNote(id, rawText) {
   }
 
   const client = clients.find(function (item) {
-    return item.id === id;
+    return String(item.id) === String(id);
   });
 
   if (!client) {
@@ -481,13 +719,21 @@ function addNote(id, rawText) {
     date: new Date().toLocaleString(),
   });
 
-  saveClients(clients);
+  try {
+    persistClients(clients);
+  } catch (error) {
+    client.notes.pop();
+    console.error(error);
+    showToast(error.message, 'error');
+    return false;
+  }
+
   return true;
 }
 
 function remindLater(id) {
   const client = clients.find(function (item) {
-    return item.id === id;
+    return String(item.id) === String(id);
   });
 
   if (!client) {
@@ -496,11 +742,36 @@ function remindLater(id) {
 
   if (scheduleReminder(client)) {
     showToast('Reminder set \u2713', 'success');
+  } else {
+    showToast('Could not save the reminder.', 'error');
   }
+}
+
+function getFocusableElements(modal) {
+  return Array.from(
+    modal.querySelectorAll(
+      'button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [href], [tabindex]:not([tabindex="-1"])',
+    ),
+  ).filter(function (element) {
+    return !element.hidden;
+  });
+}
+
+function openModal(modal, trigger) {
+  lastModalTrigger = trigger || document.activeElement;
+  modal.classList.add('open');
+  modal.setAttribute('aria-hidden', 'false');
+
+  requestAnimationFrame(function () {
+    getFocusableElements(modal)[0]?.focus();
+  });
 }
 
 function closeModal(modal) {
   modal.classList.remove('open');
+  modal.setAttribute('aria-hidden', 'true');
+  lastModalTrigger?.focus();
+  lastModalTrigger = null;
 }
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -539,6 +810,36 @@ document.addEventListener('DOMContentLoaded', function () {
     refreshClients();
   });
 
+  document.getElementById('exportBtn').addEventListener('click', exportClientsCsv);
+
+  const importFile = document.getElementById('importFile');
+  document.getElementById('importBtn').addEventListener('click', function () {
+    importFile.click();
+  });
+
+  importFile.addEventListener('change', async function () {
+    const file = importFile.files[0];
+
+    if (!file) {
+      return;
+    }
+
+    try {
+      const importedCount = await importClientsFile(file);
+
+      if (importedCount > 0) {
+        showToast(`${importedCount} client${importedCount === 1 ? '' : 's'} imported ✓`, 'success');
+      } else {
+        showToast('No valid new clients were found in this file.', 'error');
+      }
+    } catch (error) {
+      console.error(error);
+      showToast(error.message || 'Could not import this file.', 'error');
+    } finally {
+      importFile.value = '';
+    }
+  });
+
   clientsArea.addEventListener('click', function (event) {
     const card = event.target.closest('.client-card');
 
@@ -546,7 +847,7 @@ document.addEventListener('DOMContentLoaded', function () {
       return;
     }
 
-    const id = Number(card.dataset.id);
+    const id = card.dataset.id;
 
     if (event.target.dataset.action === 'delete') {
       deleteClient(id);
@@ -557,7 +858,7 @@ document.addEventListener('DOMContentLoaded', function () {
       return;
     }
 
-    openDetail(id);
+    openDetail(id, card);
   });
 
   clientsArea.addEventListener('change', function (event) {
@@ -566,13 +867,32 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     const card = event.target.closest('.client-card');
-    changeStatus(Number(card.dataset.id), event.target.value);
+    changeStatus(card.dataset.id, event.target.value);
+  });
+
+  clientsArea.addEventListener('keydown', function (event) {
+    const card = event.target.closest('.client-card');
+
+    if (
+      !card ||
+      event.target !== card ||
+      (event.key !== 'Enter' && event.key !== ' ')
+    ) {
+      return;
+    }
+
+    event.preventDefault();
+    openDetail(card.dataset.id, card);
   });
 
   document.getElementById('addClientBtn').addEventListener('click', function () {
     addForm.reset();
     clearErrors();
-    addModal.classList.add('open');
+    openModal(addModal, this);
+  });
+
+  document.getElementById('cPhone').addEventListener('input', function (event) {
+    event.target.value = sanitizePhone(event.target.value);
   });
 
   for (const modal of [addModal, detailModal]) {
@@ -587,7 +907,41 @@ document.addEventListener('DOMContentLoaded', function () {
         closeModal(modal);
       });
     });
+
+    modal.addEventListener('keydown', function (event) {
+      if (event.key !== 'Tab') {
+        return;
+      }
+
+      const focusable = getFocusableElements(modal);
+
+      if (!focusable.length) {
+        return;
+      }
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    });
   }
+
+  document.addEventListener('keydown', function (event) {
+    if (event.key !== 'Escape') {
+      return;
+    }
+
+    const openModalElement = document.querySelector('.modal-backdrop.open');
+    if (openModalElement) {
+      closeModal(openModalElement);
+    }
+  });
 
   addForm.addEventListener('submit', async function (event) {
     event.preventDefault();

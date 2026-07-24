@@ -20,8 +20,10 @@ function saveToStorage(key, value) {
   try {
     const stringValue = JSON.stringify(value);
     localStorage.setItem(key, stringValue);
+    return true;
   } catch (error) {
     console.error('Error saving to storage:', error);
+    return false;
   }
 }
 
@@ -50,7 +52,7 @@ function getUsers() {
 }
 
 function saveUsers(users) {
-  saveToStorage(STORAGE_KEYS.users, users);
+  return saveToStorage(STORAGE_KEYS.users, users);
 }
 
 function ensureDemoUser() {
@@ -71,7 +73,7 @@ function getSession() {
 }
 
 function saveSession(session) {
-  saveToStorage(STORAGE_KEYS.session, session);
+  return saveToStorage(STORAGE_KEYS.session, session);
 }
 
 function clearSession() {
@@ -97,7 +99,7 @@ function getClients() {
 }
 
 function saveClients(clients) {
-  saveToStorage(STORAGE_KEYS.clients, clients);
+  return saveToStorage(STORAGE_KEYS.clients, clients);
 }
 
 function clearClients() {
@@ -110,7 +112,7 @@ function getNotifications() {
 }
 
 function saveNotifications(notifications) {
-  saveToStorage(STORAGE_KEYS.notifications, notifications);
+  return saveToStorage(STORAGE_KEYS.notifications, notifications);
 }
 
 function getReminders() {
@@ -118,7 +120,7 @@ function getReminders() {
 }
 
 function saveReminders(reminders) {
-  saveToStorage(STORAGE_KEYS.reminders, reminders);
+  return saveToStorage(STORAGE_KEYS.reminders, reminders);
 }
 
 //  Theme

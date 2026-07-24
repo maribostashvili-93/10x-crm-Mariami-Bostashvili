@@ -3,20 +3,61 @@ const CLIENT_STATUSES = ['Lead', 'Contacted', 'Won', 'Lost'];
 
 let clients = [];
 
+function createLocalClientId() {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID();
+  }
+
+  return `local-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
+function ensureUniqueClientIds(list) {
+  const seenIds = new Set();
+  let changed = false;
+
+  const normalizedClients = list.map(function (client) {
+    let id = client.id;
+    const apiId = client.apiId ?? (Number.isInteger(client.id) ? client.id : null);
+    const idKey = id == null ? '' : String(id);
+
+    if (!idKey || seenIds.has(idKey)) {
+      id = createLocalClientId();
+      changed = true;
+    }
+
+    seenIds.add(String(id));
+    if (id !== client.id || apiId !== client.apiId) {
+      changed = true;
+      return { ...client, id, apiId };
+    }
+
+    return client;
+  });
+
+  return { clients: normalizedClients, changed };
+}
+
 // Convert an API user into a CRM client.
 function mapApiClient(user, index) {
   return {
     id: user.id,
+    apiId: user.id,
     name: `${user.firstName} ${user.lastName}`,
     email: user.email,
     phone: user.phone,
     company: user.company?.name || '',
     image: user.image,
-    status: CLIENT_STATUSES[index % CLIENT_STATUSES.length],
+    status: 'Lead',
     dealValue: Math.floor(Math.random() * 9500) + 500,
     notes: [],
     createdAt: new Date().toISOString(),
   };
+}
+
+function persistClients(list) {
+  if (!saveClients(list)) {
+    throw new Error('Could not save client data. Browser storage may be full.');
+  }
 }
 
 // Load saved clients or fetch them on the first visit.
@@ -24,7 +65,13 @@ async function loadClients() {
   const storedClients = getClients();
 
   if (storedClients !== null) {
-    clients = storedClients;
+    const normalized = ensureUniqueClientIds(storedClients);
+    clients = normalized.clients;
+
+    if (normalized.changed) {
+      persistClients(clients);
+    }
+
     return clients;
   }
 
@@ -36,17 +83,28 @@ async function loadClients() {
 
   const data = await response.json();
   clients = data.users.map(mapApiClient);
-  saveClients(clients);
+  persistClients(clients);
 
   return clients;
 }
 
 // Clear local data and fetch the original clients again.
 async function reloadClientsFromApi() {
+  const previousClients = getClients();
   clearClients();
   clients = [];
 
-  return loadClients();
+  try {
+    return await loadClients();
+  } catch (error) {
+    clients = previousClients || [];
+
+    if (previousClients !== null) {
+      persistClients(previousClients);
+    }
+
+    throw error;
+  }
 }
 
 function activeDeals(list) {
@@ -91,4 +149,29 @@ function recentClients(list, limit = 5) {
       return new Date(secondClient.createdAt) - new Date(firstClient.createdAt);
     })
     .slice(0, limit);
+}
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('storage', function (event) {
+    if (event.key !== STORAGE_KEYS.clients) {
+      return;
+    }
+
+    try {
+      const incomingClients = event.newValue ? JSON.parse(event.newValue) : [];
+      clients = ensureUniqueClientIds(incomingClients).clients;
+
+      if (typeof refreshClients === 'function') {
+        refreshClients();
+      }
+
+      if (typeof renderStats === 'function') {
+        renderStats(clients);
+        renderPipeline(clients);
+        renderRecent(clients);
+      }
+    } catch (error) {
+      console.error('Could not synchronize client data:', error);
+    }
+  });
 }

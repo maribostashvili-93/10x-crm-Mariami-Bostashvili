@@ -404,6 +404,9 @@ p {
   color: var(--text-muted);
   margin: 0.4rem 0 0;
 }
+.page-head .page-actions {
+  flex-wrap: wrap;
+}
 
 /* Avatar + icon button */
 .avatar {

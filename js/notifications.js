@@ -1,4 +1,4 @@
-let reminderTimer = null;
+const reminderTimers = new Set();
 
 function currentUserNotifications() {
   const user = getCurrentUser();
@@ -133,7 +133,11 @@ function addNotification(message, title = 'Reminder') {
   };
   const notifications = getNotifications();
   notifications.push(notification);
-  saveNotifications(notifications);
+
+  if (!saveNotifications(notifications)) {
+    return null;
+  }
+
   renderNotifications();
 
   const button = document.getElementById('notifBtn');
@@ -155,8 +159,10 @@ function markNotificationRead(id) {
 
   if (notification && !notification.read) {
     notification.read = true;
-    saveNotifications(notifications);
-    renderNotifications();
+
+    if (saveNotifications(notifications)) {
+      renderNotifications();
+    }
   }
 }
 
@@ -170,8 +176,17 @@ function markAllNotificationsRead() {
     }
   }
 
-  saveNotifications(notifications);
-  renderNotifications();
+  if (saveNotifications(notifications)) {
+    renderNotifications();
+  }
+}
+
+function scheduleReminderProcessing(delay) {
+  const timer = setTimeout(function () {
+    reminderTimers.delete(timer);
+    processDueReminders();
+  }, Math.max(0, delay));
+  reminderTimers.add(timer);
 }
 
 function scheduleReminder(client) {
@@ -189,8 +204,46 @@ function scheduleReminder(client) {
     clientName: client.name,
     dueAt: new Date(Date.now() + 60000).toISOString(),
   });
-  saveReminders(reminders);
+  if (!saveReminders(reminders)) {
+    return false;
+  }
+
+  scheduleReminderProcessing(60000);
   return true;
+}
+
+function removeClientReminders(clientId) {
+  const user = getCurrentUser();
+
+  if (!user) {
+    return;
+  }
+
+  const reminders = getReminders();
+  const nextReminders = reminders.filter(function (reminder) {
+    return !(
+      reminder.userId === user.id && String(reminder.clientId) === String(clientId)
+    );
+  });
+
+  if (nextReminders.length !== reminders.length) {
+    saveReminders(nextReminders);
+  }
+}
+
+function clearCurrentUserReminders() {
+  const user = getCurrentUser();
+
+  if (!user) {
+    return;
+  }
+
+  const reminders = getReminders().filter(function (reminder) {
+    return reminder.userId !== user.id;
+  });
+  saveReminders(reminders);
+  reminderTimers.forEach(clearTimeout);
+  reminderTimers.clear();
 }
 
 function processDueReminders() {
@@ -210,18 +263,23 @@ function processDueReminders() {
     return;
   }
 
-  saveReminders(
-    reminders.filter(function (reminder) {
-      return !due.some(function (dueReminder) {
-        return dueReminder.id === reminder.id;
-      });
-    }),
-  );
+  const completedIds = new Set();
 
   for (const reminder of due) {
-    const message = `Follow up with ${reminder.clientName}`;
-    addNotification(message);
-    showToast(`\u23f0 ${message}`, 'success');
+    const message = `Follow up: ${reminder.clientName}`;
+
+    if (addNotification(message)) {
+      completedIds.add(reminder.id);
+      showToast(`\u23f0 ${message}`, 'success');
+    }
+  }
+
+  if (completedIds.size > 0) {
+    saveReminders(
+      reminders.filter(function (reminder) {
+        return !completedIds.has(reminder.id);
+      }),
+    );
   }
 }
 
@@ -249,7 +307,16 @@ function initNotifications() {
 
   renderNotifications();
   processDueReminders();
-  reminderTimer = setInterval(processDueReminders, 1000);
+
+  const user = getCurrentUser();
+  const now = Date.now();
+  getReminders()
+    .filter(function (reminder) {
+      return reminder.userId === user?.id;
+    })
+    .forEach(function (reminder) {
+      scheduleReminderProcessing(new Date(reminder.dueAt).getTime() - now);
+    });
 
   button.addEventListener('click', function () {
     setNotificationMenuOpen(!menu.classList.contains('is-open'));
@@ -282,5 +349,6 @@ function initNotifications() {
 document.addEventListener('DOMContentLoaded', initNotifications);
 
 window.addEventListener('beforeunload', function () {
-  clearInterval(reminderTimer);
+  reminderTimers.forEach(clearTimeout);
+  reminderTimers.clear();
 });
