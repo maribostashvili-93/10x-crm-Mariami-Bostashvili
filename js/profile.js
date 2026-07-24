@@ -68,10 +68,7 @@ function saveProfile({ fullName, company }) {
   return {};
 }
 
-function validatePasswordChange(
-  { currentPassword, newPassword, confirmPassword },
-  user,
-) {
+function validatePasswordChange({ currentPassword, newPassword, confirmPassword }, user) {
   const errors = {};
 
   if (currentPassword !== user.password) {
@@ -82,8 +79,7 @@ function validatePasswordChange(
   const hasNumber = /[0-9]/.test(newPassword);
 
   if (newPassword.length < 8 || !hasLetter || !hasNumber) {
-    errors.newPass =
-      'Password must be at least 8 characters and contain a letter and a number';
+    errors.newPass = 'Password must be at least 8 characters and contain a letter and a number';
   } else if (newPassword === user.password) {
     errors.newPass = 'New password must be different from the current one';
   }
@@ -155,9 +151,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   resetButton.addEventListener('click', async function () {
-    const confirmed = window.confirm(
-      'Reset CRM data? All clients will be reloaded from the API.',
-    );
+    const confirmed = window.confirm('Reset CRM data? All clients will be reloaded from the API.');
 
     if (!confirmed) {
       return;

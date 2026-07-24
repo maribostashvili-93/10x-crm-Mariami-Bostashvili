@@ -25,7 +25,9 @@ function getVisibleClients() {
     result = result.filter(function (client) {
       return (
         client.name.toLowerCase().includes(term) ||
-        client.company.toLowerCase().includes(term)
+        client.company.toLowerCase().includes(term) ||
+        client.email.toLowerCase().includes(term) ||
+        (client.phone || '').toLowerCase().includes(term)
       );
     });
   }
@@ -35,7 +37,7 @@ function getVisibleClients() {
       return firstClient.name.localeCompare(secondClient.name);
     }
 
-    if (sortMode === 'deal') {
+    if (sortMode === 'deal-high') {
       return secondClient.dealValue - firstClient.dealValue;
     }
 
@@ -193,10 +195,7 @@ async function initialLoad() {
     refreshClients();
   } catch (error) {
     console.error(error);
-    setClientsAreaMessage(
-      'Could not load clients. Check your connection and try again.',
-      true,
-    );
+    setClientsAreaMessage('Could not load clients. Check your connection and try again.', true);
   }
 }
 
@@ -238,10 +237,7 @@ function validateClient({ name, email, phone, dealValue }, existingClients) {
 }
 
 async function addClient(values) {
-  const { errors, cleanName, normalizedEmail, numericDealValue } = validateClient(
-    values,
-    clients,
-  );
+  const { errors, cleanName, normalizedEmail, numericDealValue } = validateClient(values, clients);
 
   if (Object.keys(errors).length > 0) {
     return errors;
@@ -498,11 +494,9 @@ function remindLater(id) {
     return;
   }
 
-  showToast('Reminder set \u2713', 'success');
-
-  setTimeout(function () {
-    showToast(`\u23f0 Follow up: ${client.name}`, 'success');
-  }, 60000);
+  if (scheduleReminder(client)) {
+    showToast('Reminder set \u2713', 'success');
+  }
 }
 
 function closeModal(modal) {

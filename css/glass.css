@@ -332,18 +332,8 @@ body.theme-light .modal {
   background: rgba(255, 255, 255, 0.96);
 }
 
-/* A gradient hairline across the top of the dialog. */
 .modal-head {
   position: relative;
-}
-.modal-head::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, #2948ff, var(--primary), #c88bff);
 }
 
 .modal-backdrop {
@@ -368,11 +358,7 @@ body.theme-light .modal-backdrop {
   max-width: 56rem;
   border: 1px solid rgba(255, 255, 255, 0.24);
   border-radius: 3rem;
-  background: linear-gradient(
-    145deg,
-    rgba(17, 24, 58, 0.58),
-    rgba(7, 11, 31, 0.42)
-  );
+  background: linear-gradient(145deg, rgba(17, 24, 58, 0.58), rgba(7, 11, 31, 0.42));
   backdrop-filter: blur(36px) saturate(175%);
   -webkit-backdrop-filter: blur(36px) saturate(175%);
   box-shadow:
@@ -403,11 +389,7 @@ body.theme-light .modal-backdrop {
   z-index: 1;
   pointer-events: none;
   border-radius: inherit;
-  background: linear-gradient(
-    145deg,
-    rgba(255, 255, 255, 0.08),
-    rgba(8, 12, 35, 0.22)
-  );
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(8, 12, 35, 0.22));
   backdrop-filter: blur(6px) saturate(120%);
   -webkit-backdrop-filter: blur(6px) saturate(120%);
   box-shadow:
@@ -423,16 +405,6 @@ body.theme-light .modal-backdrop {
   background: rgba(255, 255, 255, 0.025);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-}
-#addModal .modal-head::before {
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.9) 28%,
-    rgba(172, 150, 255, 0.9) 72%,
-    transparent
-  );
 }
 #addModal .modal-body {
   padding: 2.6rem;
@@ -463,11 +435,7 @@ body.theme-light #addModal {
   background: rgba(55, 42, 104, 0.24);
 }
 body.theme-light #addModal .modal {
-  background: linear-gradient(
-    145deg,
-    rgba(255, 255, 255, 0.48),
-    rgba(237, 229, 255, 0.24)
-  );
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.48), rgba(237, 229, 255, 0.24));
   border-color: rgba(255, 255, 255, 0.72);
   box-shadow:
     0 34px 90px rgba(55, 42, 104, 0.24),
@@ -490,11 +458,7 @@ body.theme-light #modalLiquid {
   opacity: 0.34;
 }
 body.theme-light #addModal .modal::before {
-  background: linear-gradient(
-    145deg,
-    rgba(255, 255, 255, 0.22),
-    rgba(241, 235, 255, 0.12)
-  );
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.22), rgba(241, 235, 255, 0.12));
   backdrop-filter: blur(7px) saturate(115%);
   -webkit-backdrop-filter: blur(7px) saturate(115%);
   box-shadow:
@@ -697,6 +661,7 @@ body.theme-light .chip.active {
   border: 1px solid rgba(255, 138, 143, 0.4);
   color: #ff8a8f;
 }
+
 body.theme-light .badge-lead {
   background: rgba(117, 102, 223, 0.1);
   border-color: rgba(117, 102, 223, 0.34);
@@ -870,11 +835,7 @@ body.theme-dark .client-card {
     inset 1px 0 0 rgba(255, 255, 255, 0.16);
 }
 body.theme-dark .client-card::before {
-  background: linear-gradient(
-    145deg,
-    rgba(255, 255, 255, 0.055),
-    rgba(255, 255, 255, 0.012)
-  );
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.012));
 }
 body.theme-dark .client-card:hover {
   backdrop-filter: blur(24px) saturate(160%);
@@ -978,11 +939,7 @@ body.theme-light .client-card__foot select.input {
   padding: 0.7rem 1.2rem;
   border: 1px solid rgba(117, 102, 223, 0.34);
   border-radius: 1.2rem;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.5),
-    rgba(237, 229, 255, 0.3)
-  );
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.5), rgba(237, 229, 255, 0.3));
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.9),
     0 5px 14px rgba(90, 72, 154, 0.1);
@@ -1451,7 +1408,14 @@ body.theme-light .topbar.scrolled {
    ========================================================================== */
 
 body {
-  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  font-family:
+    'Inter',
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    Arial,
+    sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 

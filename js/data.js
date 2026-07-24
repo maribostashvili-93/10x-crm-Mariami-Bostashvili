@@ -4,7 +4,7 @@ const CLIENT_STATUSES = ['Lead', 'Contacted', 'Won', 'Lost'];
 let clients = [];
 
 // Convert an API user into a CRM client.
-function mapApiClient(user) {
+function mapApiClient(user, index) {
   return {
     id: user.id,
     name: `${user.firstName} ${user.lastName}`,
@@ -12,7 +12,7 @@ function mapApiClient(user) {
     phone: user.phone,
     company: user.company?.name || '',
     image: user.image,
-    status: 'Lead',
+    status: CLIENT_STATUSES[index % CLIENT_STATUSES.length],
     dealValue: Math.floor(Math.random() * 9500) + 500,
     notes: [],
     createdAt: new Date().toISOString(),

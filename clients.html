@@ -4,9 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Clients · 10X CRM</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    />
     <link rel="stylesheet" href="css/app.css" />
     <link rel="stylesheet" href="css/responsive.css" />
     <link rel="stylesheet" href="css/glass.css?v=11" />
@@ -114,8 +117,21 @@
               </svg>
             </button>
             <div class="dropdown" id="notifMenu">
-              <button class="notif-btn" id="notifBtn" aria-haspopup="true" aria-expanded="false" aria-label="Notifications">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <button
+                class="notif-btn"
+                id="notifBtn"
+                aria-haspopup="true"
+                aria-expanded="false"
+                aria-label="Notifications"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
                   <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
                   <path d="M13.73 21a2 2 0 0 1-3.46 0" />
                 </svg>
@@ -146,11 +162,13 @@
               </button>
 
               <div class="dropdown-menu" role="menu" aria-labelledby="userMenuBtn">
-              <a class="dropdown-item" role="menuitem" href="profile.html">Your profile</a>
-              <a class="dropdown-item" role="menuitem" href="dashboard.html">Dashboard</a>
-              <a class="dropdown-item is-active" role="menuitem" href="clients.html">Clients</a>
+                <a class="dropdown-item" role="menuitem" href="profile.html">Your profile</a>
+                <a class="dropdown-item" role="menuitem" href="dashboard.html">Dashboard</a>
+                <a class="dropdown-item is-active" role="menuitem" href="clients.html">Clients</a>
                 <div class="dropdown-divider"></div>
-                <button class="dropdown-item dropdown-item--danger" role="menuitem" id="logoutBtn">Sign out</button>
+                <button class="dropdown-item dropdown-item--danger" role="menuitem" id="logoutBtn">
+                  Sign out
+                </button>
               </div>
             </div>
           </div>
@@ -202,7 +220,7 @@
             <select class="input" id="sortSelect" style="width: auto">
               <option value="newest">Newest first</option>
               <option value="name">Name A→Z</option>
-              <option value="deal">Deal value: high→low</option>
+              <option value="deal-high">Deal value: high→low</option>
             </select>
           </div>
 
@@ -284,16 +302,15 @@
         <div class="modal-body" id="detailBody"><!-- filled by JS --></div>
       </div>
     </div>
-  <script src="js/storage.js"></script>
-  <script src="js/ui.js"></script>
-  <script src="js/guard.js"></script>
-  <script src="js/data.js"></script>
-  <script src="js/clients.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
-  <script src="js/glass-depth-bg.js?v=4"></script>
-  <script src="js/glass-liquid.js?v=6"></script>
-  <script src="js/glass-ui.js?v=7"></script>
-
-
+    <script src="js/storage.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/guard.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/notifications.js"></script>
+    <script src="js/clients.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="js/glass-depth-bg.js?v=4"></script>
+    <script src="js/glass-liquid.js?v=6"></script>
+    <script src="js/glass-ui.js?v=7"></script>
   </body>
 </html>

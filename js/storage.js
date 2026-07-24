@@ -3,6 +3,8 @@ const STORAGE_KEYS = {
   session: 'crm_session',
   clients: 'crm_clients',
   theme: 'crm_theme',
+  notifications: 'crm_notifications',
+  reminders: 'crm_reminders',
 };
 
 const DEMO_USER = {
@@ -100,6 +102,23 @@ function saveClients(clients) {
 
 function clearClients() {
   removeFromStorage(STORAGE_KEYS.clients);
+}
+
+// Notifications
+function getNotifications() {
+  return getFromStorage(STORAGE_KEYS.notifications, []);
+}
+
+function saveNotifications(notifications) {
+  saveToStorage(STORAGE_KEYS.notifications, notifications);
+}
+
+function getReminders() {
+  return getFromStorage(STORAGE_KEYS.reminders, []);
+}
+
+function saveReminders(reminders) {
+  saveToStorage(STORAGE_KEYS.reminders, reminders);
 }
 
 //  Theme
