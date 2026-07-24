@@ -1,177 +1,165 @@
 # 10X CRM
 
-A browser-based customer relationship management application built with
-JavaScript. It provides a focused workspace for managing clients, tracking
-sales activity, monitoring key metrics, and maintaining a user profile without
-requiring a backend service.
+A browser-based customer relationship management (CRM) application built with
+vanilla JavaScript. It provides a focused workspace for registering, managing,
+and tracking sales clients, monitoring key metrics on a dashboard, and
+maintaining a user profile — all without a backend service.
 
 ## About
 
-10X CRM is an educational frontend project created around a practical CRM
-workflow. The application combines authentication, client management,
-dashboard analytics, reminders, spreadsheet import, and CSV export in a
-responsive single-page experience.
-
-The project uses browser storage for persistence and DummyJSON as an external
-API source. API records and locally created records are kept distinguishable so
-that update and deletion operations always target the correct client.
+10X CRM is an educational frontend project built around a practical sales
+workflow. It combines authentication, client management, dashboard analytics,
+notes, and reminders in a multi-page experience. Data is persisted in the
+browser with the Web Storage API, and initial client records are loaded from
+the DummyJSON test API.
 
 ## Live Demo
 
-The production deployment URL has not been published yet.
-
-> Before submission, deploy the project and replace this note with the public
-> application URL.
+_Not deployed yet._ Before submission, deploy the project to Vercel or Netlify
+and replace this line with the public application URL.
 
 ## Features
 
 ### Authentication
 
-- User registration with field-level validation
-- Email and password sign-in
-- Persistent browser session
-- Protected application pages
-- Sign-out and account deletion
+- User registration with field-level validation (name, email, company,
+  password, confirm password)
+- Email/password sign-in with a generic "invalid credentials" message
+- Persistent session stored in `localStorage`
+- Auth guard that protects the dashboard, clients, and profile pages
+- Sign-out that clears only the session
 
 ### Client Management
 
-- View clients in a searchable and filterable table
-- Create, inspect, edit, and delete client records
-- Unique local identifiers for safely managing duplicate API identifiers
-- Email validation restricted to a valid Latin-character address format
-- Phone input sanitization and phone-number validation
-- Status, source, owner, and date-based filtering
-- Pagination and results summary
-- Bulk selection and deletion
+- Load 30 initial clients from the DummyJSON API on first visit, then persist
+  them locally
+- Render clients as cards built dynamically in JavaScript
+- Add a new client through a validated modal (`POST /users/add`)
+- Delete a client with confirmation (`DELETE /users/{id}`)
+- Change a client's status (Lead / Contacted / Won / Lost) inline
+- Search by name, company, email, or phone
+- Filter by status chips and sort by newest, name, or deal value — all
+  combined non-destructively through a single `getVisibleClients()` function
+- Client detail modal with notes and a 1-minute follow-up reminder
+- Loading, empty, and error states with a Retry button
 
 ### Import and Export
 
-- Import client data from `.xlsx` and `.xls` workbooks
-- Process records from every worksheet
-- Validate file type, file size, row count, and required values
-- Review imported rows and validation errors before confirmation
-- Export client data as a UTF-8 CSV file compatible with Excel
-- Protect exported values from spreadsheet-formula injection
+- Import clients from `.xlsx`, `.xls`, and `.csv` files (parsed with SheetJS,
+  loaded on demand)
+- Read records from every worksheet; skip invalid rows and duplicate emails
+- Validate file size (max 2 MB) and row count (max 5,000)
+- Export the client list as a UTF-8 CSV file, protected against
+  spreadsheet-formula injection
 
-### Dashboard and Productivity
+### Dashboard
 
-- Summary cards for client and revenue metrics
-- Client status and source visualizations
-- Recent-client activity
-- Persistent reminders with scheduled browser notifications
-- Cross-tab synchronization for client changes
+- Personalized greeting and a live clock that updates every second
+- Four summary cards: Total Clients, Active Deals, Won Revenue, New This Week
+- Pipeline overview with a per-status breakdown
+- Recent Clients list (the five most recently added)
 
-### Profile and Preferences
+### Profile
 
-- Update personal details
-- Change profile image
-- Change account password
-- Select the preferred application language
-- Reset application data with rollback protection
-- Permanently delete the current account
+- View account details and initials-based avatar
+- Edit full name and company
+- Change the account password (with current-password verification)
+- Reset CRM data — reload the original clients from the API without touching
+  the account or session
 
-### User Experience
+### Productivity and UX
 
-- Responsive layouts for desktop, tablet, and mobile screens
-- Keyboard-accessible dialogs
-- Focus trapping and focus restoration in modal windows
-- Escape-key dialog dismissal
-- ARIA labels and live status announcements
-- Reduced-motion support
-- Light and dark theme support
+- In-app notification center with unread badge and reminder alerts
+- Reminders that fire via `setTimeout` and survive page reloads
+- Light and dark theme, remembered across visits
+- Toast notifications for success and error feedback
+- Keyboard-accessible modals with focus trapping, focus restoration, and
+  Escape-to-close
+- Cross-tab synchronization of client changes via the `storage` event
+- Responsive layout for desktop, tablet, and mobile
 
 ## Technology Stack
 
-| Area | Technology |
-| --- | --- |
-| Markup | HTML5 |
-| Styling | CSS3 |
-| Application logic | Vanilla JavaScript |
-| Data persistence | Web Storage API |
-| Remote data | DummyJSON REST API |
-| Spreadsheet parsing | SheetJS |
-| Visual effects | Three.js |
-| Icons | Font Awesome |
-| Typography | Google Fonts |
+| Area              | Technology            |
+| ----------------- | --------------------- |
+| Markup            | HTML5                 |
+| Styling           | CSS3                  |
+| Application logic | Vanilla JavaScript    |
+| Data persistence  | Web Storage API       |
+| Remote data       | DummyJSON REST API    |
+| Spreadsheet parse | SheetJS (on demand)   |
+| Visual effects    | Three.js              |
+| Typography        | Google Fonts (Inter)  |
 
-No frontend framework, build system, or package installation is required.
+No frontend framework, build step, or package installation is required.
 
 ## Application Pages
 
-| Page | Purpose |
-| --- | --- |
-| `index.html` | Sign-in and registration |
-| `dashboard.html` | Metrics, charts, activity, and reminders |
-| `clients.html` | Client CRUD, filters, import, and export |
-| `client-details.html` | Detailed client information |
-| `profile.html` | Account settings and preferences |
+| Page             | Purpose                                          |
+| ---------------- | ------------------------------------------------ |
+| `index.html`     | Login (default landing page)                     |
+| `signup.html`    | New account registration                         |
+| `dashboard.html` | Metrics, pipeline, and recent activity           |
+| `clients.html`   | Client list, CRUD, filters, import, and export   |
+| `profile.html`   | Account details, password, and data reset        |
 
 ## Architecture
 
-The project follows a page-based modular structure:
+The project uses a page-based structure with shared JavaScript modules:
 
 ```text
 10X-CRM-MARIAMI/
 ├── index.html
+├── signup.html
 ├── dashboard.html
 ├── clients.html
-├── client-details.html
 ├── profile.html
 ├── css/
-│   └── style.css
+│   ├── app.css
+│   ├── glass.css
+│   └── responsive.css
 ├── js/
-│   ├── auth.js
-│   ├── clients.js
-│   ├── dashboard.js
-│   ├── profile.js
-│   ├── storage.js
-│   ├── api.js
-│   ├── lang.js
-│   └── ...
-├── images/
+│   ├── storage.js        # localStorage helpers and keys
+│   ├── ui.js             # toasts, form errors, validators, formatting
+│   ├── guard.js          # auth guard, navigation, theme, logout
+│   ├── login.js          # login page logic
+│   ├── signup.js         # registration logic
+│   ├── data.js           # client loading, API mapping, stats helpers
+│   ├── clients.js        # clients page: CRUD, filters, modals, import/export
+│   ├── dashboard.js      # dashboard rendering
+│   ├── profile.js        # profile and password logic
+│   ├── notifications.js  # notification center and reminders
+│   └── glass-*.js        # decorative glass/Three.js visual effects
 ├── glossary.md
+├── GLASS-MARKUP.md
 └── README.md
 ```
 
-Shared behavior is separated into JavaScript modules for authentication,
-storage, API communication, navigation, localization, notifications, and
-page-specific functionality.
+Shared logic (storage, auth guard, validation) lives in one place and is
+included on every page, rather than being duplicated.
 
-## Data and API Design
+## Data and Storage
 
-Application state is persisted in `localStorage`, including:
+Application state is persisted in `localStorage` under these keys:
 
-- registered users and the active session;
-- local and API-backed clients;
-- user preferences and profile data;
-- reminders and application state.
+| Key                 | Contents                                     |
+| ------------------- | -------------------------------------------- |
+| `crm_users`         | Registered user objects                      |
+| `crm_session`       | The active session (who is signed in)        |
+| `crm_clients`       | The client list (main application state)     |
+| `crm_theme`         | `"light"` or `"dark"`                         |
+| `crm_notifications` | In-app notifications                         |
+| `crm_reminders`     | Pending follow-up reminders                  |
 
-DummyJSON supplies initial client data. Network failures are handled without
-discarding the last valid local state. Locally created clients receive stable
-unique identifiers, while their optional remote identifiers are stored
-separately.
+DummyJSON supplies the initial client data. Write operations (POST/DELETE) are
+simulated by the API — the request succeeds but is not stored server-side, so
+persistence is handled locally. Locally created clients receive a stable unique
+`id`, while their optional API-returned identifier is kept separately as
+`apiId` so that deletes target the correct record.
 
-## Spreadsheet Import
-
-Supported file types:
-
-- `.xlsx`
-- `.xls`
-
-Recommended column names:
-
-| Column | Required | Example |
-| --- | --- | --- |
-| `name` | Yes | `Nino Beridze` |
-| `email` | Yes | `nino@example.com` |
-| `phone` | No | `+995 555 12 34 56` |
-| `company` | No | `Acme Georgia` |
-| `status` | No | `Lead` |
-| `source` | No | `Website` |
-| `owner` | No | `Mariami` |
-
-The importer also recognizes supported Georgian column aliases. Invalid rows
-are reported before data is saved. Files are limited to 2 MB and 5,000 rows.
+> **Security note:** passwords are stored in plain text in `localStorage`. This
+> is acceptable only because this is a backend-free learning project. In a real
+> product, passwords must be hashed and stored on a server.
 
 ## How to Run
 
@@ -187,58 +175,30 @@ are reported before data is saved. Files are limited to 2 MB and 5,000 rows.
    cd 10x-crm-Mariami-Bostashvili
    ```
 
-3. Start a local web server:
+3. Start a local web server (recommended, so external resources load
+   correctly):
 
    ```bash
    npx serve .
    ```
 
-4. Open the address displayed in the terminal.
+4. Open the address shown in the terminal.
 
-Opening `index.html` directly may work for basic use, but a local server is
-recommended for consistent browser behavior and external resource loading.
+Opening `index.html` directly from the file system works for basic use, but a
+local server is recommended.
 
 ## Test Account
 
-No fixed credentials are required. Create a new account from the registration
-form and use the same email address and password to sign in.
-
-For a quick manual check:
+A demo account is seeded automatically in every browser, so no registration is
+needed to try the app:
 
 ```text
-Name: Demo User
-Email: demo@example.com
+Email:    demo@crm.com
 Password: Demo123!
 ```
 
-These credentials become valid only after registering them in the current
-browser.
-
-## Quality Checklist
-
-Before release, verify the following flows in a modern browser:
-
-- registration, sign-in, session restoration, and sign-out;
-- email and phone validation;
-- client creation, editing, deletion, and duplicate-identifier handling;
-- filtering, searching, pagination, and bulk actions;
-- multi-sheet Excel import and CSV export;
-- page refresh and cross-tab persistence;
-- keyboard navigation and modal focus behavior;
-- responsive layouts at mobile, tablet, and desktop widths.
-
-## Known Limitations
-
-- Data is stored per browser and is not synchronized through a real backend.
-- Clearing browser storage removes locally persisted accounts and CRM data.
-- External API records depend on network availability.
-- Browser notifications require user permission.
-- A public deployment URL is not currently included.
-
-## Documentation
-
-- [Technical glossary](glossary.md)
-- [Glass interface implementation notes](GLASS-MARKUP.md)
+You can also register a new account from the sign-up page and use those
+credentials to sign in.
 
 ## Credits
 
@@ -247,5 +207,11 @@ Developed by **Mariami Bostashvili** as part of the 10X CRM frontend project.
 - Repository:
   [github.com/maribostashvili-93/10x-crm-Mariami-Bostashvili](https://github.com/maribostashvili-93/10x-crm-Mariami-Bostashvili)
 - Data API: [DummyJSON](https://dummyjson.com/)
-- Spreadsheet library: [SheetJS](https://sheetjs.com/)
-- 3D library: [Three.js](https://threejs.org/)
+- Spreadsheet parsing: [SheetJS](https://sheetjs.com/)
+- 3D / visual effects: [Three.js](https://threejs.org/)
+
+## Documentation
+
+- [ქართული საგამოცდო roadmap](ROADMAP.md)
+- [Technical glossary](glossary.md)
+- [Glass interface implementation notes](GLASS-MARKUP.md)
