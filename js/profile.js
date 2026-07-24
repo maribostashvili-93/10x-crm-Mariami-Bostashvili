@@ -42,7 +42,10 @@ function updateCurrentUser(changes) {
   }
 
   Object.assign(user, changes);
-  saveUsers(users);
+
+  if (!saveUsers(users)) {
+    return null;
+  }
 
   return user;
 }
@@ -56,10 +59,15 @@ function saveProfile({ fullName, company }) {
     };
   }
 
-  updateCurrentUser({
+  const updatedUser = updateCurrentUser({
     fullName: name,
     company: company.trim(),
   });
+
+  if (!updatedUser) {
+    showToast('Could not save profile changes. Check browser storage.', 'error');
+    return {};
+  }
 
   renderProfile();
   showCurrentUser();
@@ -99,7 +107,13 @@ function changePassword(values) {
     return errors;
   }
 
-  updateCurrentUser({ password: values.newPassword });
+  if (!updateCurrentUser({ password: values.newPassword })) {
+    showToast('Could not change the password. Check browser storage.', 'error');
+    return {
+      newPass: 'Could not save the password. Please try again',
+    };
+  }
+
   showToast('Password changed \u2713', 'success');
 
   return {};
@@ -161,6 +175,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     try {
       await reloadClientsFromApi();
+      clearCurrentUserReminders();
       showToast('CRM data reset \u2713', 'success');
     } catch (error) {
       console.error(error);

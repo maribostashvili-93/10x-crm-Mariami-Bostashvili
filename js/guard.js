@@ -1,5 +1,6 @@
 function requireAuth() {
-  if (!getSession()) {
+  if (!getSession() || !getCurrentUser()) {
+    clearSession();
     window.location.href = 'index.html';
     return false;
   }
@@ -7,10 +8,15 @@ function requireAuth() {
 }
 
 function redirectIfAuthenticated() {
-  if (getSession()) {
+  if (getSession() && getCurrentUser()) {
     window.location.href = 'dashboard.html';
     return true;
   }
+
+  if (getSession()) {
+    clearSession();
+  }
+
   return false;
 }
 

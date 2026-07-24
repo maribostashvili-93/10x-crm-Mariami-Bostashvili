@@ -5,12 +5,6 @@ const signupForm = document.getElementById('signupForm');
 initPublicPage();
 clearErrorOnInput(signupForm);
 
-function isValidEmail(email) {
-  if (!email.includes('@')) return false;
-  const afterAt = email.split('@')[1];
-  return afterAt.includes('.');
-}
-
 function isValidPassword(password) {
   const hasLetter = /[a-zA-Z]/.test(password);
   const hasNumber = /[0-9]/.test(password);
@@ -75,7 +69,11 @@ signupForm.addEventListener('submit', function (event) {
 
   const users = getUsers();
   users.push(newUser);
-  saveUsers(users);
+
+  if (!saveUsers(users)) {
+    showToast('Could not create the account. Check browser storage and try again.', 'error');
+    return;
+  }
 
   showToast('Account created successfully! Please log in.', 'success');
   setTimeout(() => {

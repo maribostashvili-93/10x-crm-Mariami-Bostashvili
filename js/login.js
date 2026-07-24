@@ -34,11 +34,17 @@ function attemptLogin({ email, password }) {
   }
 
   // Save the current session
-  saveSession({
+  const sessionSaved = saveSession({
     userId: user.id,
     email: user.email,
     loginAt: new Date().toISOString(),
   });
+
+  if (!sessionSaved) {
+    return {
+      formError: 'Could not save your session. Check browser storage and try again.',
+    };
+  }
 
   return { user };
 }
