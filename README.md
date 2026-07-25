@@ -15,8 +15,7 @@ the DummyJSON test API.
 
 ## Live Demo
 
-_Not deployed yet._ Before submission, deploy the project to Vercel or Netlify
-and replace this line with the public application URL.
+[View the live application on Vercel](https://10x-crm-mariami-bostashvili.vercel.app/)
 
 ## Features
 
