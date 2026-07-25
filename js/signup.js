@@ -8,7 +8,7 @@ clearErrorOnInput(signupForm);
 function isValidPassword(password) {
   const hasLetter = /[a-zA-Z]/.test(password);
   const hasNumber = /[0-9]/.test(password);
-  return password.length >= 8 && hasLetter && hasNumber;
+  return password.length >= MIN_PASSWORD_LENGTH && hasLetter && hasNumber;
 }
 
 // ---------- submit ----------
@@ -45,7 +45,7 @@ signupForm.addEventListener('submit', function (event) {
   if (!isValidPassword(password)) {
     showError(
       'password',
-      'Password must be at least 8 characters and contain a letter and a number',
+      `Password must be at least ${MIN_PASSWORD_LENGTH} characters and contain a letter and a number`,
     );
     isValid = false;
   }

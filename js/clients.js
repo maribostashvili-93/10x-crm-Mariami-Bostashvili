@@ -4,6 +4,7 @@ let sortMode = 'newest';
 let openClientId = null;
 let lastModalTrigger = null;
 let xlsxLibraryPromise = null;
+let searchDebounceTimer = null;
 
 const STATUS_BADGES = {
   Lead: 'badge-lead',
@@ -784,9 +785,15 @@ document.addEventListener('DOMContentLoaded', function () {
   const detailModal = document.getElementById('detailModal');
   const addForm = document.getElementById('addForm');
 
+  // Debounce the search: wait until the user pauses typing before re-rendering,
+  // so the list is not rebuilt on every single keystroke.
   document.getElementById('searchInput').addEventListener('input', function (event) {
-    searchTerm = event.target.value;
-    refreshClients();
+    const value = event.target.value;
+    clearTimeout(searchDebounceTimer);
+    searchDebounceTimer = setTimeout(function () {
+      searchTerm = value;
+      refreshClients();
+    }, 250);
   });
 
   document.getElementById('filterChips').addEventListener('click', function (event) {

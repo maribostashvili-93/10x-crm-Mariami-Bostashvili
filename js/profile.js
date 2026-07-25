@@ -86,8 +86,8 @@ function validatePasswordChange({ currentPassword, newPassword, confirmPassword 
   const hasLetter = /[a-zA-Z]/.test(newPassword);
   const hasNumber = /[0-9]/.test(newPassword);
 
-  if (newPassword.length < 8 || !hasLetter || !hasNumber) {
-    errors.newPass = 'Password must be at least 8 characters and contain a letter and a number';
+  if (newPassword.length < MIN_PASSWORD_LENGTH || !hasLetter || !hasNumber) {
+    errors.newPass = `Password must be at least ${MIN_PASSWORD_LENGTH} characters and contain a letter and a number`;
   } else if (newPassword === user.password) {
     errors.newPass = 'New password must be different from the current one';
   }

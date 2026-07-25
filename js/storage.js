@@ -1,3 +1,5 @@
+const MIN_PASSWORD_LENGTH = 10;
+
 const STORAGE_KEYS = {
   users: 'crm_users',
   session: 'crm_session',

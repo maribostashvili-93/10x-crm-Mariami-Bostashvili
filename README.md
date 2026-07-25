@@ -138,6 +138,28 @@ The project uses a page-based structure with shared JavaScript modules:
 Shared logic (storage, auth guard, validation) lives in one place and is
 included on every page, rather than being duplicated.
 
+## Design Principles
+
+The application follows a small set of deliberate patterns:
+
+- **The Golden Cycle — State → Save → Render.** Every action changes the
+  in-memory `clients` array first, saves it to `localStorage`, then re-renders
+  the screen. The DOM is never edited directly, which keeps data in sync across
+  pages and tabs.
+- **Single source of truth.** The `clients` array is the one authoritative
+  source of data; the interface only reflects it.
+- **Separation of concerns.** Storage, auth, data, UI, and page logic each live
+  in their own module.
+- **Configuration-driven design.** Repeated values (statuses, storage keys,
+  badge classes) are declared once in constants such as `CLIENT_STATUSES` and
+  `STORAGE_KEYS`.
+- **Immutability.** Client updates build a new array (`[newClient, ...clients]`)
+  instead of mutating the original.
+- **Event delegation.** A single listener on the clients container handles every
+  card, including ones added later.
+- **Guard clauses and defensive programming.** Early returns and `try/catch`
+  keep the code readable and resilient to missing data or network errors.
+
 ## Data and Storage
 
 Application state is persisted in `localStorage` under these keys:
@@ -157,9 +179,20 @@ persistence is handled locally. Locally created clients receive a stable unique
 `id`, while their optional API-returned identifier is kept separately as
 `apiId` so that deletes target the correct record.
 
-> **Security note:** passwords are stored in plain text in `localStorage`. This
-> is acceptable only because this is a backend-free learning project. In a real
-> product, passwords must be hashed and stored on a server.
+## Security Notes
+
+This is a frontend-only learning project, but it applies several real security
+practices and documents where it deliberately does not:
+
+- **Password storage (learning trade-off).** Passwords are kept in plain text in
+  `localStorage`. In a real product this is unacceptable — `localStorage` is
+  readable by any script on the domain, so passwords must be hashed on a server
+  (for example with bcrypt: salt + hash).
+- **User-enumeration protection.** Login always returns the same generic message,
+  `Invalid email or password`, so an attacker cannot discover which emails are
+  registered.
+- **XSS protection.** User-provided text is inserted with `textContent`, never
+  `innerHTML`, so it cannot inject and execute scripts.
 
 ## How to Run
 
