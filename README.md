@@ -3,15 +3,16 @@
 A browser-based customer relationship management (CRM) application built with
 vanilla JavaScript. It provides a focused workspace for registering, managing,
 and tracking sales clients, monitoring key metrics on a dashboard, and
-maintaining a user profile — all without a backend service.
+maintaining a user profile. Core CRM data stays browser-based, while optional
+Jira and Asana connections run through serverless API proxies.
 
 ## About
 
 10X CRM is an educational frontend project built around a practical sales
 workflow. It combines authentication, client management, dashboard analytics,
-notes, and reminders in a multi-page experience. Data is persisted in the
-browser with the Web Storage API, and initial client records are loaded from
-the DummyJSON test API.
+notes, reminders, and Jira/Asana task integrations in a multi-page experience.
+Data is persisted in the browser with the Web Storage API, and initial client
+records are loaded from the DummyJSON test API.
 
 ## Live Demo
 
@@ -58,6 +59,16 @@ the DummyJSON test API.
 - Pipeline overview with a per-status breakdown
 - Recent Clients list (the five most recently added)
 
+### Jira and Asana Integrations
+
+- View recent Jira issues and Asana tasks together on the Tasks page
+- Create a Jira issue or Asana task directly from a CRM client record
+- Send requests through server-side `/api` proxies so credentials never reach
+  the browser
+- Use the current local/DummyJSON CRM client data today; the same integration
+  flow can consume real CRM backend data later as long as it supplies the
+  expected client fields (`name`, `email`, `company`, and `dealValue`)
+
 ### Profile
 
 - View account details and initials-based avatar
@@ -86,6 +97,7 @@ the DummyJSON test API.
 | Application logic | Vanilla JavaScript    |
 | Data persistence  | Web Storage API       |
 | Remote data       | DummyJSON REST API    |
+| Task integrations | Jira Cloud, Asana     |
 | Spreadsheet parse | SheetJS (on demand)   |
 | Visual effects    | Three.js              |
 | Typography        | Google Fonts (Inter)  |
@@ -100,6 +112,7 @@ No frontend framework, build step, or package installation is required.
 | `signup.html`    | New account registration                         |
 | `dashboard.html` | Metrics, pipeline, and recent activity           |
 | `clients.html`   | Client list, CRUD, filters, import, and export   |
+| `tasks.html`     | Jira issues and Asana tasks                     |
 | `profile.html`   | Account details, password, and data reset        |
 
 ## Architecture
@@ -178,10 +191,36 @@ persistence is handled locally. Locally created clients receive a stable unique
 `id`, while their optional API-returned identifier is kept separately as
 `apiId` so that deletes target the correct record.
 
+## Jira and Asana Configuration
+
+The Jira and Asana features use Vercel serverless functions in `api/jira` and
+`api/asana`. They connect to the real provider APIs only when these server-side
+environment variables are configured:
+
+```text
+JIRA_EMAIL=
+JIRA_API_TOKEN=
+JIRA_BASE_URL=https://your-domain.atlassian.net
+JIRA_PROJECT_KEY=
+
+ASANA_PAT=
+ASANA_PROJECT_GID=
+```
+
+Add the values in the Vercel project settings and redeploy. When configuration
+is missing, the Tasks page shows a clear integration error; no secret or token
+is stored in frontend code or `localStorage`.
+
+The integration currently builds tasks from the CRM clients loaded from
+DummyJSON and saved locally. A future real CRM/CLM backend only needs to map its
+client records to the same frontend fields; the Jira and Asana proxy endpoints
+do not need to change.
+
 ## Security Notes
 
-This is a frontend-only learning project, but it applies several real security
-practices and documents where it deliberately does not:
+This is a browser-first learning project with small serverless integration
+proxies. It applies several real security practices and documents where it
+deliberately does not:
 
 - **Password storage (learning trade-off).** Passwords are kept in plain text in
   `localStorage`. In a real product this is unacceptable — `localStorage` is
@@ -192,6 +231,8 @@ practices and documents where it deliberately does not:
   registered.
 - **XSS protection.** User-provided text is inserted with `textContent`, never
   `innerHTML`, so it cannot inject and execute scripts.
+- **Integration secrets.** Jira and Asana credentials remain in server-side
+  environment variables and are accessed only by the `/api` proxy functions.
 
 ## How to Run
 
