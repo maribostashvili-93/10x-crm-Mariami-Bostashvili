@@ -37,6 +37,25 @@ function ensureUniqueClientIds(list) {
   return { clients: normalizedClients, changed };
 }
 
+function ensureDemoPipelineStatuses(list) {
+  const isUntouchedLeadSeed =
+    list.length === 30 &&
+    list.every(function (client) {
+      return client.status === 'Lead' && Number.isInteger(client.apiId);
+    });
+
+  if (!isUntouchedLeadSeed) {
+    return { clients: list, changed: false };
+  }
+
+  return {
+    clients: list.map(function (client, index) {
+      return { ...client, status: CLIENT_STATUSES[index % CLIENT_STATUSES.length] };
+    }),
+    changed: true,
+  };
+}
+
 // Convert an API user into a CRM client.
 function mapApiClient(user, index) {
   return {
@@ -47,7 +66,7 @@ function mapApiClient(user, index) {
     phone: user.phone,
     company: user.company?.name || '',
     image: user.image,
-    status: 'Lead',
+    status: CLIENT_STATUSES[index % CLIENT_STATUSES.length],
     dealValue: Math.floor(Math.random() * 9500) + 500,
     notes: [],
     createdAt: new Date().toISOString(),
@@ -66,9 +85,10 @@ async function loadClients() {
 
   if (storedClients !== null) {
     const normalized = ensureUniqueClientIds(storedClients);
-    clients = normalized.clients;
+    const seeded = ensureDemoPipelineStatuses(normalized.clients);
+    clients = seeded.clients;
 
-    if (normalized.changed) {
+    if (normalized.changed || seeded.changed) {
       persistClients(clients);
     }
 
@@ -119,7 +139,7 @@ function wonRevenue(list) {
       return client.status === 'Won';
     })
     .reduce(function (total, client) {
-      return total + client.dealValue;
+      return total + Number(client.dealValue || 0);
     }, 0);
 }
 
