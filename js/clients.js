@@ -221,7 +221,12 @@ function normalizeImportRow(row) {
   const fields = {};
 
   for (const [key, value] of Object.entries(row)) {
-    fields[String(key).trim().toLowerCase().replace(/[\s_-]+/g, '')] = value;
+    fields[
+      String(key)
+        .trim()
+        .toLowerCase()
+        .replace(/[\s_-]+/g, '')
+    ] = value;
   }
 
   const firstName = String(fields.firstname ?? '').trim();
@@ -428,7 +433,7 @@ function validateClient({ name, email, phone, dealValue }, existingClients) {
 
   const numericDealValue = Number(dealValue);
 
-  if (Number.isNaN(numericDealValue) || numericDealValue <= 0) {
+  if (Number.isNaN(numericDealValue)) {
     errors.cDeal = 'Deal value must be a positive number';
   }
 
@@ -646,6 +651,57 @@ function renderNotes(client, host) {
   host.append(noteControls, reminderButton);
 }
 
+function createIntegrationButton(label, createTask) {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'btn btn-outline';
+  button.textContent = label;
+  button.addEventListener('click', async function () {
+    button.disabled = true;
+
+    try {
+      const result = await createTask();
+      const url = result.url || result.task?.permalink_url || '';
+      showToast('Task created ✓', 'success');
+
+      if (url) {
+        window.open(url, '_blank', 'noopener');
+      }
+    } catch (error) {
+      console.error(error);
+      showToast(error.message || 'Could not create the task.', 'error');
+    } finally {
+      button.disabled = false;
+    }
+  });
+
+  return button;
+}
+
+// Buttons that push this client into Jira or Asana through our /api proxy.
+function renderIntegrations(client, host) {
+  if (typeof createJiraIssueForClient !== 'function') {
+    return;
+  }
+
+  const title = document.createElement('h4');
+  title.className = 'card-title mb-2 mt-2';
+  title.textContent = 'Integrations';
+
+  const controls = document.createElement('div');
+  controls.className = 'note-add';
+  controls.append(
+    createIntegrationButton('Create Jira issue', function () {
+      return createJiraIssueForClient(client);
+    }),
+    createIntegrationButton('Create Asana task', function () {
+      return createAsanaTaskForClient(client);
+    }),
+  );
+
+  host.append(title, controls);
+}
+
 function openDetail(id, trigger) {
   const client = clients.find(function (item) {
     return String(item.id) === String(id);
@@ -692,6 +748,7 @@ function openDetail(id, trigger) {
 
   detailBody.append(header, rows);
   renderNotes(client, detailBody);
+  renderIntegrations(client, detailBody);
   const detailModal = document.getElementById('detailModal');
 
   if (!detailModal.classList.contains('open')) {
@@ -880,11 +937,7 @@ document.addEventListener('DOMContentLoaded', function () {
   clientsArea.addEventListener('keydown', function (event) {
     const card = event.target.closest('.client-card');
 
-    if (
-      !card ||
-      event.target !== card ||
-      (event.key !== 'Enter' && event.key !== ' ')
-    ) {
+    if (!card || event.target !== card || (event.key !== 'Enter' && event.key !== ' ')) {
       return;
     }
 
