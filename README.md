@@ -285,6 +285,5 @@ Developed by **Mariami Bostashvili** as part of the 10X CRM frontend project.
 
 ## Documentation
 
-- [ქართული საგამოცდო roadmap](ROADMAP.md)
 - [Technical glossary](glossary.md)
 - [Glass interface implementation notes](GLASS-MARKUP.md)
